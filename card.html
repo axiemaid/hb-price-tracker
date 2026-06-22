@@ -223,7 +223,7 @@ async function init() {
   });
 
   const ctx = document.getElementById('priceChart').getContext('2d');
-  new Chart(ctx, {
+  const priceChart = new Chart(ctx, {
     type: 'scatter',
     data: { datasets },
     options: {
@@ -300,6 +300,32 @@ async function init() {
   const tabs = ['All', ...availableGrades];
   let activeFilter = 'All';
 
+  // Store original colors for dimming
+  const originalColors = priceChart.data.datasets.map(ds => ({
+    backgroundColor: ds.backgroundColor,
+    borderColor: ds.borderColor,
+  }));
+
+  function filterChart() {
+    const isAll = activeFilter === 'All';
+    priceChart.data.datasets.forEach((ds, i) => {
+      const grade = Object.keys(GRADE_CONFIG).find(g => ds.label === GRADE_CONFIG[g].label);
+      const trendGrade = Object.keys(GRADE_CONFIG).find(g => ds.label === g + ' Trend');
+      const matchGrade = grade || trendGrade;
+      const active = isAll || matchGrade === activeFilter;
+      const orig = originalColors[i];
+      if (active) {
+        ds.backgroundColor = orig.backgroundColor;
+        ds.borderColor = orig.borderColor;
+      } else {
+        // Dim to ~15% opacity
+        ds.backgroundColor = (orig.backgroundColor || '') + '26';
+        ds.borderColor = (orig.borderColor || '') + '26';
+      }
+    });
+    priceChart.update();
+  }
+
   function renderTabs() {
     gradeTabs.innerHTML = tabs.map(t => {
       const isActive = t === activeFilter;
@@ -310,7 +336,7 @@ async function init() {
       return `<button class="grade-tab${isActive ? ' active' : ''}" style="${activeStyle}" data-grade="${t}">${t}</button>`;
     }).join('');
     gradeTabs.querySelectorAll('.grade-tab').forEach(btn => {
-      btn.addEventListener('click', () => { activeFilter = btn.dataset.grade; renderTabs(); renderSales(); });
+      btn.addEventListener('click', () => { activeFilter = btn.dataset.grade; renderTabs(); renderSales(); filterChart(); });
     });
   }
 
