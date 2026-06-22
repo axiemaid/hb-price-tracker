@@ -90,6 +90,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 <div class="history-box" id="historyBox" style="display:none">
   <h2>Sales History</h2>
   <div class="grade-tabs" id="gradeTabs"></div>
+  <div id="saleCount" style="font-size:.85em;color:#8a8070;margin-bottom:12px"></div>
   <div class="sale-list-wrap"><ul class="sale-list" id="saleList"></ul></div>
 </div>
 
@@ -315,6 +316,7 @@ async function init() {
 
   function renderSales() {
     const filtered = activeFilter === 'All' ? allSorted : allSorted.filter(s => s.grade === activeFilter);
+    document.getElementById('saleCount').textContent = filtered.length + ' sale' + (filtered.length !== 1 ? 's' : '');
     saleListEl.innerHTML = filtered.map(s => {
       const cfg = GRADE_CONFIG[s.grade] || { color: '#8a8070' };
       return `<li><a href="https://jp.mercari.com/item/${s.item_id}" target="_blank" rel="noopener" class="sale-link">
