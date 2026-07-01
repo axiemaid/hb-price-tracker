@@ -13,7 +13,23 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .controls select,.controls input{background:#131a2e;border:1px solid #1e2d4a;color:#e8e0d4;padding:8px 12px;border-radius:6px;font-size:.85em}
 .controls select:focus,.controls input:focus{outline:none;border-color:#d4a94c}
 .controls label{color:#8a8070;font-size:.8em}
+.view-toggle{display:flex;gap:4px}
+.view-btn{background:#131a2e;border:1px solid #1e2d4a;color:#8a8070;padding:8px 12px;border-radius:6px;font-size:.85em;cursor:pointer;transition:all .15s}
+.view-btn:hover{border-color:#4a4438}
+.view-btn.active{background:#d4a94c22;border-color:#d4a94c;color:#d4a94c}
 .grid{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.table-view{max-width:960px;margin:0 auto;display:none}
+.table-view table{width:100%;border-collapse:collapse;background:#131a2e;border-radius:10px;overflow:hidden}
+.table-view th,.table-view td{padding:10px 12px;text-align:left;border-bottom:1px solid #1e2d4a}
+.table-view th{color:#8a8070;font-size:.7em;text-transform:uppercase;letter-spacing:1px;font-weight:500}
+.table-view td{color:#e8e0d4;font-size:.85em}
+.table-view tr:last-child td{border-bottom:none}
+.table-view tr:hover td{background:#1e2d4a22}
+.table-view td.id{text-transform:uppercase;font-weight:600;color:#fff}
+.table-view td.price{color:#d4a94c;font-weight:700}
+.table-view td.change{font-weight:500}
+.table-view td.change.up{color:#4a9e4e}
+.table-view td.change.down{color:#c44d4d}
 .card{background:#131a2e;border:1px solid #1e2d4a;border-radius:10px;overflow:hidden;transition:border-color .2s,transform .15s;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column}
 .card:hover{border-color:#d4a94c;transform:translateY(-2px)}
 .card img{width:100%;border-radius:12px;display:block}
@@ -30,6 +46,8 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
   h1{font-size:1.2em}
   .card .card-name{font-size:.8em}
   .card img{border-radius:6px}
+  .table-view td:nth-child(2){display:none}
+  .table-view th:nth-child(2){display:none}
 }
 </style>
 </head>
@@ -53,9 +71,33 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
     <label>Filter</label>
     <input type="text" id="filterInput" placeholder="Card ID…">
   </div>
+  <div class="view-toggle">
+    <button class="view-btn active" id="gridBtn" aria-label="Grid view">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <rect x="1" y="1" width="6" height="6" rx="1"/>
+        <rect x="9" y="1" width="6" height="6" rx="1"/>
+        <rect x="1" y="9" width="6" height="6" rx="1"/>
+        <rect x="9" y="9" width="6" height="6" rx="1"/>
+      </svg>
+    </button>
+    <button class="view-btn" id="tableBtn" aria-label="Table view">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <rect x="1" y="2" width="14" height="2" rx="1"/>
+        <rect x="1" y="6" width="14" height="2" rx="1"/>
+        <rect x="1" y="10" width="14" height="2" rx="1"/>
+        <rect x="1" y="14" width="14" height="2" rx="1"/>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <div class="grid" id="grid"></div>
+<div class="table-view" id="tableView">
+  <table>
+    <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Change</th></tr></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
 
 <p class="footer">Data sourced from Mercari Japan sold listings · Updated <span id="lastUpdate">—</span></p>
 
@@ -99,6 +141,8 @@ async function init() {
     }
   });
 
+  let currentView = 'grid';
+
   function render(sortBy, filterText) {
     let filtered = cardList;
     if (filterText) {
@@ -112,31 +156,28 @@ async function init() {
     } else if (sortBy === 'price-desc') {
       sorted.sort((a, b) => (priceMap[b.id] ?? -1) - (priceMap[a.id] ?? -1));
     } else if (sortBy === 'change-asc') {
-      // Biggest gains first; cards without change go to end
       sorted.sort((a, b) => {
         const ca = changeMap[a.id] ?? -Infinity;
         const cb = changeMap[b.id] ?? -Infinity;
-        return cb - ca; // descending by change value (biggest positive first)
+        return cb - ca;
       });
     } else if (sortBy === 'change-desc') {
-      // Biggest drops first; cards without change go to end
       sorted.sort((a, b) => {
         const ca = changeMap[a.id] ?? Infinity;
         const cb = changeMap[b.id] ?? Infinity;
-        return ca - cb; // ascending by change value (biggest negative first)
+        return ca - cb;
       });
     } else {
       sorted.sort((a, b) => a.id.localeCompare(b.id));
     }
 
+    // Render grid view
     const grid = document.getElementById('grid');
     grid.innerHTML = sorted.map(c => {
       const price = priceMap[c.id];
       const change = changeMap[c.id];
-      const count = salesCountMap[c.id];
       const displayName = c.title?.en || c.name?.en || c.id.toUpperCase();
       
-      // Format change indicator
       let changeHtml = '';
       if (change != null) {
         const arrow = change > 0 ? '↑' : '↓';
@@ -156,13 +197,64 @@ async function init() {
         </div>
       </a>`;
     }).join('');
+
+    // Render table view
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = sorted.map(c => {
+      const price = priceMap[c.id];
+      const change = changeMap[c.id];
+      const displayName = c.title?.en || c.name?.en || c.id.toUpperCase();
+      
+      let changeCell = '';
+      if (change != null) {
+        const arrow = change > 0 ? '↑' : '↓';
+        const cls = change > 0 ? 'up' : 'down';
+        const formatted = (change > 0 ? '+' : '') + change.toFixed(1) + '%';
+        changeCell = `<td class="change ${cls}">${arrow}${formatted}</td>`;
+      } else {
+        changeCell = '<td class="change">—</td>';
+      }
+      
+      return `<tr onclick="location.href='card.html?id=${c.id}'" style="cursor:pointer">
+        <td class="id">${c.id.toUpperCase()}</td>
+        <td>${displayName}</td>
+        ${price != null
+          ? `<td class="price">¥${price.toLocaleString()}</td>`
+          : '<td class="price">—</td>'}
+        ${changeCell}
+      </tr>`;
+    }).join('');
+  }
+
+  function setView(view) {
+    currentView = view;
+    const grid = document.getElementById('grid');
+    const tableView = document.getElementById('tableView');
+    const gridBtn = document.getElementById('gridBtn');
+    const tableBtn = document.getElementById('tableBtn');
+    
+    if (view === 'grid') {
+      grid.style.display = 'grid';
+      tableView.style.display = 'none';
+      gridBtn.classList.add('active');
+      tableBtn.classList.remove('active');
+    } else {
+      grid.style.display = 'none';
+      tableView.style.display = 'block';
+      gridBtn.classList.remove('active');
+      tableBtn.classList.add('active');
+    }
   }
 
   const sortEl = document.getElementById('sortBy');
   const filterEl = document.getElementById('filterInput');
+  const gridBtn = document.getElementById('gridBtn');
+  const tableBtn = document.getElementById('tableBtn');
   const update = () => render(sortEl.value, filterEl.value);
   sortEl.addEventListener('change', update);
   filterEl.addEventListener('input', update);
+  gridBtn.addEventListener('click', () => setView('grid'));
+  tableBtn.addEventListener('click', () => setView('table'));
   update();
   
   // Compute last update timestamp
