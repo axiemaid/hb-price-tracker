@@ -65,8 +65,9 @@ async function init() {
   const cards = cardsData.cards || cardsData;
   const cardList = Array.isArray(cards) ? cards : Object.values(cards);
 
-  // Precompute last-10 mean per card
+  // Precompute price and % change per card
   const priceMap = {};
+  const changeMap = {};
   const salesCountMap = {};
   cardList.forEach(c => {
     const allCardSales = allSales.filter(s => s.card_id === c.id);
@@ -74,9 +75,23 @@ async function init() {
       .filter(s => s.grade === 'A')
       .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
     salesCountMap[c.id] = allCardSales.length;
+    
     if (gradeASales.length > 0) {
-      const recent = gradeASales.slice(0, 10);
+      // Determine window size
+      const windowSize = gradeASales.length >= 20 ? 10 : (gradeASales.length >= 10 ? 5 : gradeASales.length);
+      const recent = gradeASales.slice(0, windowSize);
       priceMap[c.id] = Math.round(recent.reduce((sum, s) => sum + s.price_jpy, 0) / recent.length);
+      
+      // Compute % change if enough data for comparison
+      if (gradeASales.length >= windowSize * 2) {
+        const prev = gradeASales.slice(windowSize, windowSize * 2);
+        const prevAvg = prev.reduce((sum, s) => sum + s.price_jpy, 0) / prev.length;
+        const pctChange = ((priceMap[c.id] - prevAvg) / prevAvg) * 100;
+        // Only store if ≥±2%
+        if (Math.abs(pctChange) >= 2) {
+          changeMap[c.id] = pctChange;
+        }
+      }
     } else {
       priceMap[c.id] = null;
     }
@@ -101,15 +116,26 @@ async function init() {
     const grid = document.getElementById('grid');
     grid.innerHTML = sorted.map(c => {
       const price = priceMap[c.id];
+      const change = changeMap[c.id];
       const count = salesCountMap[c.id];
       const displayName = c.title?.en || c.name?.en || c.id.toUpperCase();
+      
+      // Format change indicator
+      let changeHtml = '';
+      if (change != null) {
+        const arrow = change > 0 ? '↑' : '↓';
+        const color = change > 0 ? '#4ade80' : '#f97316';
+        const formatted = (change > 0 ? '+' : '') + change.toFixed(1) + '%';
+        changeHtml = ` <span style="color:${color};font-size:.85em">${arrow}${formatted}</span>`;
+      }
+      
       return `<a href="card.html?id=${c.id}" class="card">
         <img src="images/${c.id}.png" alt="${c.id}" onerror="this.style.display='none'">
         <div class="info">
           <div class="card-id">${c.id.toUpperCase()}</div>
           <div class="card-name">${displayName}</div>
           ${price != null
-            ? `<div class="card-price">¥${price.toLocaleString()}</div>`
+            ? `<div class="card-price">¥${price.toLocaleString()}${changeHtml}</div>`
             : '<div class="no-sales">No sales data</div>'}
         </div>
       </a>`;
