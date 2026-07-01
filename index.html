@@ -16,7 +16,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .grid{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
 .card{background:#131a2e;border:1px solid #1e2d4a;border-radius:10px;overflow:hidden;transition:border-color .2s,transform .15s;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column}
 .card:hover{border-color:#d4a94c;transform:translateY(-2px)}
-.card img{width:100%;aspect-ratio:3/4;object-fit:contain;border-radius:8px;background:#131a2e;display:block}
+.card img{width:100%;border-radius:12px;display:block}
 .card .info{padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
 .card .card-id{font-size:.7em;color:#8a8070;text-transform:uppercase;letter-spacing:1px}
 .card .card-name{font-size:.9em;font-weight:600;color:#fff;min-height:2.4em}
@@ -49,7 +49,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
   </div>
   <div>
     <label>Filter</label>
-    <input type="text" id="filterInput" placeholder="Card ID or name…">
+    <input type="text" id="filterInput" placeholder="Card ID…">
   </div>
 </div>
 
@@ -86,13 +86,7 @@ async function init() {
     let filtered = cardList;
     if (filterText) {
       const q = filterText.toLowerCase();
-      filtered = cardList.filter(c =>
-        c.id.toLowerCase().includes(q) ||
-        (c.name?.en || '').toLowerCase().includes(q) ||
-        (c.name?.ja || '').includes(q) ||
-        (c.title?.en || '').toLowerCase().includes(q) ||
-        (c.title?.ja || '').includes(q)
-      );
+      filtered = cardList.filter(c => c.id.toLowerCase().includes(q));
     }
 
     let sorted = [...filtered];
