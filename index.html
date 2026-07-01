@@ -21,15 +21,19 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .table-view{max-width:960px;margin:0 auto;display:none}
 .table-view table{width:100%;border-collapse:collapse;background:#131a2e;border-radius:10px;overflow:hidden}
 .table-view th,.table-view td{padding:10px 12px;text-align:left;border-bottom:1px solid #1e2d4a}
-.table-view th{color:#8a8070;font-size:.7em;text-transform:uppercase;letter-spacing:1px;font-weight:500}
-.table-view td{color:#e8e0d4;font-size:.85em}
+.table-view th{color:#8a8070;font-size:.8em;text-transform:uppercase;letter-spacing:1px;font-weight:500}
+.table-view td{color:#e8e0d4;font-size:1em}
 .table-view tr:last-child td{border-bottom:none}
 .table-view tr:hover td{background:#1e2d4a22}
-.table-view td.id{text-transform:uppercase;font-weight:600;color:#fff}
-.table-view td.price{color:#d4a94c;font-weight:700}
-.table-view td.change{font-weight:500}
+.table-view td.id{text-transform:uppercase;font-weight:600;color:#fff;width:60px}
+.table-view td.name{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.table-view td.price{color:#d4a94c;font-weight:700;width:90px;text-align:right}
+.table-view td.change{font-weight:500;width:70px;text-align:right}
 .table-view td.change.up{color:#4a9e4e}
 .table-view td.change.down{color:#c44d4d}
+.table-view th.price{text-align:right;width:90px}
+.table-view th.change{text-align:right;width:70px}
+.table-view th.id{width:60px}
 .card{background:#131a2e;border:1px solid #1e2d4a;border-radius:10px;overflow:hidden;transition:border-color .2s,transform .15s;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column}
 .card:hover{border-color:#d4a94c;transform:translateY(-2px)}
 .card img{width:100%;border-radius:12px;display:block}
@@ -46,8 +50,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
   h1{font-size:1.2em}
   .card .card-name{font-size:.8em}
   .card img{border-radius:6px}
-  .table-view td:nth-child(2){display:none}
-  .table-view th:nth-child(2){display:none}
+  .table-view td.name{max-width:80px}
 }
 </style>
 </head>
@@ -217,7 +220,7 @@ async function init() {
       
       return `<tr onclick="location.href='card.html?id=${c.id}'" style="cursor:pointer">
         <td class="id">${c.id.toUpperCase()}</td>
-        <td>${displayName}</td>
+        <td class="name">${displayName}</td>
         ${price != null
           ? `<td class="price">¥${price.toLocaleString()}</td>`
           : '<td class="price">—</td>'}
