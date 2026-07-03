@@ -48,7 +48,9 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card .card-id{font-size:.75em;color:#8a8070;text-transform:uppercase;letter-spacing:1px}
 .card .card-name{font-size:.95em;color:#fff;min-height:2.4em}
 .card .card-price{font-size:1em;color:#d4a94c}
-.card .card-sales{font-size:.7em;color:#8a8070}
+.card .change-up{color:#4a9e4e}
+.card .change-down{color:#c44d4d}
+.card .card-sold{color:#8a8070}
 .card .no-sales{font-size:.8em;color:#4a4438;font-style:italic}
 .footer{text-align:center;color:#4a4438;font-size:.7em;margin-top:32px}
 @media(max-width:600px){
@@ -215,12 +217,12 @@ async function init() {
       
       let changeHtml = '';
       if (change != null) {
-        const color = change > 0 ? '#4a9e4e' : '#c44d4d';
+        const cls = change > 0 ? 'change-up' : 'change-down';
         const formatted = (change > 0 ? '+' : '') + change.toFixed(1) + '%';
-        changeHtml = ` <span style="color:${color};font-weight:500;font-size:.85em">${formatted}</span>`;
+        changeHtml = ` <span class="${cls}">${formatted}</span>`;
       }
       
-      const salesHtml = ` <span style="color:#8a8070;font-size:.85em">· ${salesCount} sold</span>`;
+      const salesHtml = ` <span class="card-sold">· ${salesCount} sold</span>`;
       
       return `<a href="card.html?id=${c.id}" class="card">
         <img src="images/${c.id}.png" alt="${c.id}" onerror="this.style.display='none'">
