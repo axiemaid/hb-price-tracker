@@ -77,8 +77,6 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
     <label>Sort by</label>
     <select id="sortBy">
       <option value="id">Card ID</option>
-      <option value="name-asc">Name A-Z</option>
-      <option value="name-desc">Name Z-A</option>
       <option value="price-asc">Price ↑</option>
       <option value="price-desc">Price ↓</option>
       <option value="change-asc">% Change ↑</option>
@@ -114,7 +112,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 <div class="grid" id="grid"></div>
 <div class="table-view" id="tableView">
   <table>
-    <thead><tr><th class="id" data-sort="id">ID</th><th class="name" data-sort="name">Name</th><th class="price" data-sort="price">Price</th><th class="change" data-sort="change">Change</th><th class="sales" data-sort="sales">Sold</th></tr></thead>
+    <thead><tr><th class="id" data-sort="id">ID</th><th class="name">Name</th><th class="price" data-sort="price">Price</th><th class="change" data-sort="change">Change</th><th class="sales" data-sort="sales">Sold</th></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
 </div>
@@ -171,19 +169,7 @@ async function init() {
     }
 
     let sorted = [...filtered];
-    if (sortBy === 'name-asc') {
-      sorted.sort((a, b) => {
-        const na = (a.title?.en || a.name?.en || a.id).toLowerCase();
-        const nb = (b.title?.en || b.name?.en || b.id).toLowerCase();
-        return na.localeCompare(nb);
-      });
-    } else if (sortBy === 'name-desc') {
-      sorted.sort((a, b) => {
-        const na = (a.title?.en || a.name?.en || a.id).toLowerCase();
-        const nb = (b.title?.en || b.name?.en || b.id).toLowerCase();
-        return nb.localeCompare(na);
-      });
-    } else if (sortBy === 'price-asc') {
+    if (sortBy === 'price-asc') {
       sorted.sort((a, b) => (priceMap[a.id] ?? Infinity) - (priceMap[b.id] ?? Infinity));
     } else if (sortBy === 'price-desc') {
       sorted.sort((a, b) => (priceMap[b.id] ?? -1) - (priceMap[a.id] ?? -1));
