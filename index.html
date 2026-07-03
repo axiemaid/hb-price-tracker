@@ -210,6 +210,7 @@ async function init() {
     grid.innerHTML = sorted.map(c => {
       const price = priceMap[c.id];
       const change = changeMap[c.id];
+      const salesCount = salesCountMap[c.id] || 0;
       const displayName = c.title?.en || c.name?.en || c.id.toUpperCase();
       
       let changeHtml = '';
@@ -219,13 +220,15 @@ async function init() {
         changeHtml = ` <span style="color:${color};font-weight:500;font-size:.85em">${formatted}</span>`;
       }
       
+      const salesHtml = ` <span style="color:#8a8070;font-size:.85em">· ${salesCount} sold</span>`;
+      
       return `<a href="card.html?id=${c.id}" class="card">
         <img src="images/${c.id}.png" alt="${c.id}" onerror="this.style.display='none'">
         <div class="info">
           <div class="card-id">${c.id.toUpperCase()}</div>
           <div class="card-name">${displayName}</div>
           ${price != null
-            ? `<div class="card-price">¥${price.toLocaleString()}${changeHtml}</div>`
+            ? `<div class="card-price">¥${price.toLocaleString()}${changeHtml}${salesHtml}</div>`
             : '<div class="no-sales">No sales data</div>'}
         </div>
       </a>`;
