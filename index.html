@@ -218,10 +218,9 @@ async function init() {
       
       let changeCell = '';
       if (change != null) {
-        const arrow = change > 0 ? '↑' : '↓';
         const cls = change > 0 ? 'up' : 'down';
         const formatted = (change > 0 ? '+' : '') + change.toFixed(1) + '%';
-        changeCell = `<td class="change ${cls}">${arrow}${formatted}</td>`;
+        changeCell = `<td class="change ${cls}">${formatted}</td>`;
       } else {
         changeCell = '<td class="change">—</td>';
       }
