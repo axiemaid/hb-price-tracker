@@ -21,7 +21,11 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .table-view{max-width:960px;margin:0 auto;display:none}
 .table-view table{width:100%;border-collapse:collapse;background:#131a2e;border-radius:10px;overflow:hidden;table-layout:fixed}
 .table-view th,.table-view td{padding:10px 12px;text-align:left;border-bottom:1px solid #1e2d4a}
-.table-view th{color:#8a8070;font-size:.8em;text-transform:uppercase;letter-spacing:1px;font-weight:500}
+.table-view th{color:#8a8070;font-size:.8em;text-transform:uppercase;letter-spacing:1px;font-weight:500;cursor:pointer;user-select:none;transition:color .15s}
+.table-view th:hover{color:#b8a070}
+.table-view th.sort-active{color:#d4a94c}
+.table-view th.sort-asc::after{content:' ↑';font-size:.9em}
+.table-view th.sort-desc::after{content:' ↓';font-size:.9em}
 .table-view th.id{width:60px;padding-left:36px}
 .table-view th.name{width:150px}
 .table-view th.price{text-align:right;width:90px}
@@ -71,10 +75,14 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
     <label>Sort by</label>
     <select id="sortBy">
       <option value="id">Card ID</option>
+      <option value="name-asc">Name A-Z</option>
+      <option value="name-desc">Name Z-A</option>
       <option value="price-asc">Price ↑</option>
       <option value="price-desc">Price ↓</option>
       <option value="change-asc">% Change ↑</option>
       <option value="change-desc">% Change ↓</option>
+      <option value="sales-asc">Sales ↑</option>
+      <option value="sales-desc">Sales ↓</option>
     </select>
   </div>
   <div>
@@ -104,7 +112,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 <div class="grid" id="grid"></div>
 <div class="table-view" id="tableView">
   <table>
-    <thead><tr><th class="id">ID</th><th class="name">Name</th><th class="price">Price</th><th class="change">Change</th><th class="sales">Sales</th></tr></thead>
+    <thead><tr><th class="id" data-sort="id">ID</th><th class="name" data-sort="name">Name</th><th class="price" data-sort="price">Price</th><th class="change" data-sort="change">Change</th><th class="sales" data-sort="sales">Sales</th></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
 </div>
@@ -161,7 +169,19 @@ async function init() {
     }
 
     let sorted = [...filtered];
-    if (sortBy === 'price-asc') {
+    if (sortBy === 'name-asc') {
+      sorted.sort((a, b) => {
+        const na = (a.title?.en || a.name?.en || a.id).toLowerCase();
+        const nb = (b.title?.en || b.name?.en || b.id).toLowerCase();
+        return na.localeCompare(nb);
+      });
+    } else if (sortBy === 'name-desc') {
+      sorted.sort((a, b) => {
+        const na = (a.title?.en || a.name?.en || a.id).toLowerCase();
+        const nb = (b.title?.en || b.name?.en || b.id).toLowerCase();
+        return nb.localeCompare(na);
+      });
+    } else if (sortBy === 'price-asc') {
       sorted.sort((a, b) => (priceMap[a.id] ?? Infinity) - (priceMap[b.id] ?? Infinity));
     } else if (sortBy === 'price-desc') {
       sorted.sort((a, b) => (priceMap[b.id] ?? -1) - (priceMap[a.id] ?? -1));
@@ -177,6 +197,10 @@ async function init() {
         const cb = changeMap[b.id] ?? Infinity;
         return ca - cb;
       });
+    } else if (sortBy === 'sales-asc') {
+      sorted.sort((a, b) => (salesCountMap[a.id] ?? 0) - (salesCountMap[b.id] ?? 0));
+    } else if (sortBy === 'sales-desc') {
+      sorted.sort((a, b) => (salesCountMap[b.id] ?? 0) - (salesCountMap[a.id] ?? 0));
     } else {
       sorted.sort((a, b) => a.id.localeCompare(b.id));
     }
@@ -260,7 +284,46 @@ async function init() {
   const filterEl = document.getElementById('filterInput');
   const gridBtn = document.getElementById('gridBtn');
   const tableBtn = document.getElementById('tableBtn');
-  const update = () => render(sortEl.value, filterEl.value);
+
+  // Update header indicators based on current sort
+  function updateHeaderIndicators(sortBy) {
+    document.querySelectorAll('.table-view th[data-sort]').forEach(th => {
+      th.classList.remove('sort-active', 'sort-asc', 'sort-desc');
+    });
+    const field = sortBy.includes('-') ? sortBy.split('-')[0] : sortBy;
+    const dir = sortBy.includes('-') ? sortBy.split('-')[1] : 'asc';
+    const th = document.querySelector(`.table-view th[data-sort="${field}"]`);
+    if (th) {
+      th.classList.add('sort-active', `sort-${dir}`);
+    }
+  }
+
+  // Handle header clicks for sorting
+  document.querySelectorAll('.table-view th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const field = th.dataset.sort;
+      const currentSort = sortEl.value;
+      const currentField = currentSort.includes('-') ? currentSort.split('-')[0] : currentSort;
+      const currentDir = currentSort.includes('-') ? currentSort.split('-')[1] : 'asc';
+      
+      let newSort;
+      if (field === currentField) {
+        // Toggle direction
+        newSort = field === 'id' ? 'id' : `${field}-${currentDir === 'asc' ? 'desc' : 'asc'}`;
+      } else {
+        // New field, default to ascending (or id for id field)
+        newSort = field === 'id' ? 'id' : `${field}-asc`;
+      }
+      
+      sortEl.value = newSort;
+      update();
+    });
+  });
+
+  const update = () => {
+    render(sortEl.value, filterEl.value);
+    updateHeaderIndicators(sortEl.value);
+  };
   sortEl.addEventListener('change', update);
   filterEl.addEventListener('input', update);
   gridBtn.addEventListener('click', () => setView('grid'));
