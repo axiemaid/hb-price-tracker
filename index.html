@@ -190,10 +190,9 @@ async function init() {
       
       let changeHtml = '';
       if (change != null) {
-        const arrow = change > 0 ? '↑' : '↓';
         const color = change > 0 ? '#4a9e4e' : '#c44d4d';
         const formatted = (change > 0 ? '+' : '') + change.toFixed(1) + '%';
-        changeHtml = ` <span style="color:${color};font-weight:500;font-size:.85em">${arrow}${formatted}</span>`;
+        changeHtml = ` <span style="color:${color};font-weight:500;font-size:.85em">${formatted}</span>`;
       }
       
       return `<a href="card.html?id=${c.id}" class="card">
