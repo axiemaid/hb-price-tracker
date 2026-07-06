@@ -211,7 +211,7 @@ async function init() {
       const salesHtml = ` <span class="card-sold">· ${salesCount} sold</span>`;
       
       return `<a href="card.html?id=${c.id}" class="card">
-        <img src="images/${c.id}.png" alt="${c.id}" onerror="this.style.display='none'">
+        <img src="images/thumbnails/${c.id}.webp" alt="${c.id}" loading="lazy" onerror="this.style.display='none'">
         <div class="info">
           <div class="card-id">${c.id.toUpperCase()}</div>
           <div class="card-name">${displayName}</div>
