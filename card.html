@@ -100,7 +100,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
   <div class="sale-list-wrap"><ul class="sale-list" id="saleList"></ul></div>
 </div>
 
-<p class="footer">Maintained by <a href="https://x.com/axiemaid" target="_blank">Axiemaid</a></p>
+<p class="footer">Maintained by <a href="https://x.com/axiemaid" target="_blank">axiemaid</a> · Updated <span id="lastUpdate">—</span></p>
 
 <div class="image-overlay hidden" id="imageOverlay" onclick="closeImageOverlay()">
   <img id="overlayImage" src="" alt="Card detail">
@@ -298,21 +298,40 @@ async function init() {
     },
   });
 
-  // Grade price row
+  // Grade price row - 30d mean with fallback to last 10
   const priceRow = document.getElementById('priceRow');
+  const now = new Date();
+  const day30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const mean = arr => arr.length === 0 ? null : arr.reduce((a, b) => a + b, 0) / arr.length;
+  
   ['A', 'B', 'C', 'D'].forEach(g => {
     const pts = byGrade[g];
     if (!pts || pts.length === 0) return;
     const cfg = GRADE_CONFIG[g];
     const sorted = [...pts].sort((a, b) => new Date(b.x) - new Date(a.x));
-    const recent10 = sorted.slice(0, 10).map(s => s.y);
-    const recentMean = Math.round(recent10.reduce((a, b) => a + b, 0) / recent10.length);
+    
+    // Last 30 days sales
+    const recent30 = sorted
+      .filter(s => new Date(s.x) >= day30)
+      .map(s => s.y);
+    
+    let priceMean, label;
+    if (recent30.length >= 3) {
+      priceMean = Math.round(mean(recent30));
+      label = '30d avg';
+    } else {
+      // Fallback to last 10 sales
+      const last10 = sorted.slice(0, 10).map(s => s.y);
+      priceMean = Math.round(mean(last10));
+      label = `Last ${last10.length} avg`;
+    }
+    
     const col = document.createElement('div');
     col.className = 'price-col';
     col.innerHTML = `
       <div class="grade-label" style="color:${cfg.color}">${cfg.label}</div>
-      <div class="price-big">¥${recentMean.toLocaleString()}</div>
-      <div class="detail">Last ${recent10.length} avg</div>
+      <div class="price-big">¥${priceMean.toLocaleString()}</div>
+      <div class="detail">${label}</div>
     `;
     priceRow.appendChild(col);
   });

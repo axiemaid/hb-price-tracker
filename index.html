@@ -80,8 +80,8 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
       <option value="id">Card ID</option>
       <option value="price-asc">Price ↑</option>
       <option value="price-desc">Price ↓</option>
-      <option value="change-asc">% Change ↑</option>
-      <option value="change-desc">% Change ↓</option>
+      <option value="change-asc">30d Change ↑</option>
+      <option value="change-desc">30d Change ↓</option>
       <option value="sales-asc">Sold ↑</option>
       <option value="sales-desc">Sold ↓</option>
     </select>
@@ -113,12 +113,12 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 <div class="grid" id="grid"></div>
 <div class="table-view" id="tableView">
   <table>
-    <thead><tr><th class="id" data-sort="id">ID</th><th class="name">Name</th><th class="price" data-sort="price">Price</th><th class="change" data-sort="change">Change</th><th class="sales" data-sort="sales">Sold</th></tr></thead>
+    <thead><tr><th class="id" data-sort="id">ID</th><th class="name">Name</th><th class="price" data-sort="price">Price</th><th class="change" data-sort="change">30d Δ</th><th class="sales" data-sort="sales">Sold</th></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
 </div>
 
-<p class="footer">Maintained by <a href="https://x.com/axiemaid" target="_blank">Axiemaid</a></p>
+<p class="footer">Maintained by <a href="https://x.com/axiemaid" target="_blank">axiemaid</a> · Updated <span id="lastUpdate">—</span></p>
 
 <script>
 async function init() {
@@ -128,10 +128,18 @@ async function init() {
   const cards = cardsData.cards || cardsData;
   const cardList = Array.isArray(cards) ? cards : Object.values(cards);
 
-  // Precompute price and % change per card
+  // Precompute price and % change per card using 30-day windows with mean
   const priceMap = {};
   const changeMap = {};
   const salesCountMap = {};
+  
+  const now = new Date();
+  const day30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const day60 = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+  
+  // Mean helper
+  const mean = arr => arr.length === 0 ? null : arr.reduce((a, b) => a + b, 0) / arr.length;
+  
   cardList.forEach(c => {
     const allCardSales = allSales.filter(s => s.card_id === c.id);
     const gradeASales = allCardSales
@@ -140,18 +148,35 @@ async function init() {
     salesCountMap[c.id] = allCardSales.length;
     
     if (gradeASales.length > 0) {
-      // Determine window size
-      const windowSize = gradeASales.length >= 20 ? 10 : (gradeASales.length >= 10 ? 5 : gradeASales.length);
-      const recent = gradeASales.slice(0, windowSize);
-      priceMap[c.id] = Math.round(recent.reduce((sum, s) => sum + s.price_jpy, 0) / recent.length);
+      // Last 30 days sales for current price (mean)
+      const recent30 = gradeASales
+        .filter(s => new Date(s.sold_date) >= day30)
+        .map(s => s.price_jpy);
       
-      // Compute % change if enough data for comparison
-      if (gradeASales.length >= windowSize * 2) {
-        const prev = gradeASales.slice(windowSize, windowSize * 2);
-        const prevAvg = prev.reduce((sum, s) => sum + s.price_jpy, 0) / prev.length;
-        const pctChange = ((priceMap[c.id] - prevAvg) / prevAvg) * 100;
-        // Only store if ≥±2%
-        if (Math.abs(pctChange) >= 2) {
+      // Previous 30 days (30-60 days ago) for comparison
+      const prev30 = gradeASales
+        .filter(s => {
+          const d = new Date(s.sold_date);
+          return d >= day60 && d < day30;
+        })
+        .map(s => s.price_jpy);
+      
+      // Current price: mean of last 30 days (fallback to last 10 sales if not enough)
+      if (recent30.length >= 3) {
+        priceMap[c.id] = Math.round(mean(recent30));
+      } else {
+        // Not enough recent data, use last 10 sales
+        const last10 = gradeASales.slice(0, 10).map(s => s.price_jpy);
+        priceMap[c.id] = last10.length > 0 ? Math.round(mean(last10)) : null;
+      }
+      
+      // 30d change: compare means
+      if (recent30.length >= 3 && prev30.length >= 3) {
+        const recentAvg = mean(recent30);
+        const prevAvg = mean(prev30);
+        const pctChange = ((recentAvg - prevAvg) / prevAvg) * 100;
+        // Only store if ≥±0.5%
+        if (Math.abs(pctChange) >= 0.5) {
           changeMap[c.id] = pctChange;
         }
       }
