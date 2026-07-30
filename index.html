@@ -128,7 +128,7 @@ async function init() {
   const cards = cardsData.cards || cardsData;
   const cardList = Array.isArray(cards) ? cards : Object.values(cards);
 
-  // Precompute price and % change per card using 30-day windows with median
+  // Precompute price and % change per card using 30-day windows with mean
   const priceMap = {};
   const changeMap = {};
   const salesCountMap = {};
@@ -137,13 +137,8 @@ async function init() {
   const day30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   const day60 = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
   
-  // Median helper
-  const median = arr => {
-    if (arr.length === 0) return null;
-    const sorted = [...arr].sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-  };
+  // Mean helper
+  const mean = arr => arr.length === 0 ? null : arr.reduce((a, b) => a + b, 0) / arr.length;
   
   cardList.forEach(c => {
     const allCardSales = allSales.filter(s => s.card_id === c.id);
@@ -153,7 +148,7 @@ async function init() {
     salesCountMap[c.id] = allCardSales.length;
     
     if (gradeASales.length > 0) {
-      // Last 30 days sales for current price (median)
+      // Last 30 days sales for current price (mean)
       const recent30 = gradeASales
         .filter(s => new Date(s.sold_date) >= day30)
         .map(s => s.price_jpy);
@@ -166,20 +161,20 @@ async function init() {
         })
         .map(s => s.price_jpy);
       
-      // Current price: median of last 30 days (fallback to last 10 sales if not enough)
+      // Current price: mean of last 30 days (fallback to last 10 sales if not enough)
       if (recent30.length >= 3) {
-        priceMap[c.id] = Math.round(median(recent30));
+        priceMap[c.id] = Math.round(mean(recent30));
       } else {
         // Not enough recent data, use last 10 sales
         const last10 = gradeASales.slice(0, 10).map(s => s.price_jpy);
-        priceMap[c.id] = last10.length > 0 ? Math.round(median(last10)) : null;
+        priceMap[c.id] = last10.length > 0 ? Math.round(mean(last10)) : null;
       }
       
-      // 30d change: compare medians
+      // 30d change: compare means
       if (recent30.length >= 3 && prev30.length >= 3) {
-        const recentMed = median(recent30);
-        const prevMed = median(prev30);
-        const pctChange = ((recentMed - prevMed) / prevMed) * 100;
+        const recentAvg = mean(recent30);
+        const prevAvg = mean(prev30);
+        const pctChange = ((recentAvg - prevAvg) / prevAvg) * 100;
         // Only store if ≥±0.5%
         if (Math.abs(pctChange) >= 0.5) {
           changeMap[c.id] = pctChange;
