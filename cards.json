@@ -1535,6 +1535,21 @@
       },
       "image": "images/s08.png",
       "sourceUrl": "https://grandlinewiki.net/tcg/hyperbattle/s08.html"
+    },
+    {
+      "id": "c370",
+      "cardType": "character",
+      "name": {
+        "en": "Nami",
+        "ja": "ナミ"
+      },
+      "title": {
+        "en": "Sunbathing",
+        "ja": "日光浴"
+      },
+      "series": "One Piece Hyper Battle",
+      "set": "Unknown",
+      "released": "2001"
     }
   ],
   "scraped": "2026-05-05T06:39:55.306Z"
