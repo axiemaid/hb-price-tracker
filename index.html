@@ -150,8 +150,8 @@ async function init() {
         const prev = gradeASales.slice(windowSize, windowSize * 2);
         const prevAvg = prev.reduce((sum, s) => sum + s.price_jpy, 0) / prev.length;
         const pctChange = ((priceMap[c.id] - prevAvg) / prevAvg) * 100;
-        // Only store if ≥±2%
-        if (Math.abs(pctChange) >= 2) {
+        // Only store if ≥±0.5%
+        if (Math.abs(pctChange) >= 0.5) {
           changeMap[c.id] = pctChange;
         }
       }
