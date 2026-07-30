@@ -186,10 +186,7 @@ async function init() {
         const recentAvg = mean(recent30);
         const prevAvg = mean(prev30);
         const pctChange = ((recentAvg - prevAvg) / prevAvg) * 100;
-        // Only store if ≥±0.5%
-        if (Math.abs(pctChange) >= 0.5) {
-          changeMap[c.id] = pctChange;
-        }
+        changeMap[c.id] = pctChange;
       }
     } else {
       priceMap[c.id] = null;
