@@ -1550,6 +1550,22 @@
       "series": "One Piece Hyper Battle",
       "set": "Unknown",
       "released": "2001"
+    },
+    {
+      "id": "c435",
+      "cardType": "character",
+      "name": {
+        "en": "Chopper",
+        "ja": "チョッパー"
+      },
+      "title": {
+        "en": "Miracle Doctor",
+        "ja": "奇跡の医者"
+      },
+      "series": "One Piece Hyper Battle",
+      "set": "Grand Line Compilation 2",
+      "released": "2001",
+      "image": "images/c435.png"
     }
   ],
   "scraped": "2026-05-05T06:39:55.306Z"
