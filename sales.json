@@ -37783,5 +37783,60 @@
     "grade": "C",
     "notes": "",
     "logged_at": "2026-07-30T18:24:21.478Z"
+  },
+  {
+    "item_id": "m59477191793",
+    "title": "ワンピース カードダス バギー バラバラ緊急脱出 C25",
+    "price_jpy": 1000,
+    "price_display": "¥1,000",
+    "sold_date": "2026-07-30",
+    "card_id": "c25",
+    "grade": "A",
+    "notes": "",
+    "logged_at": "2026-07-30T18:42:46.152Z"
+  },
+  {
+    "item_id": "m94988753155",
+    "title": "初期　希少　絶版　ワンピース　ハイパーバトル　カードダス　ヘルメッポ",
+    "price_jpy": 500,
+    "price_display": "¥500",
+    "sold_date": "2026-05-18",
+    "card_id": "c23",
+    "grade": "A",
+    "notes": "",
+    "logged_at": "2026-07-30T19:29:46.393Z"
+  },
+  {
+    "item_id": "m67826770461",
+    "title": "ONE PIECE ワンピース カードダス ハイパーバトル C16",
+    "price_jpy": 800,
+    "price_display": "¥800",
+    "sold_date": "2026-07-30",
+    "card_id": "c16",
+    "grade": "A",
+    "notes": "",
+    "logged_at": "2026-07-30T19:30:38.634Z"
+  },
+  {
+    "item_id": "m89727083666",
+    "title": "ワンピース カードダス チョッパー 奇跡の医者",
+    "price_jpy": 4444,
+    "price_display": "¥4,444",
+    "sold_date": "2026-07-28",
+    "card_id": "c435",
+    "grade": "A",
+    "notes": "",
+    "logged_at": "2026-07-30T20:55:06.159Z"
+  },
+  {
+    "item_id": "m51888077875",
+    "title": "初期 ワンピースカードダス ハイパーバトル チョッパー C435 奇跡の医者",
+    "price_jpy": 3600,
+    "price_display": "¥3,600",
+    "sold_date": "2026-07-25",
+    "card_id": "c435",
+    "grade": "B",
+    "notes": "",
+    "logged_at": "2026-07-30T20:56:18.545Z"
   }
 ]
