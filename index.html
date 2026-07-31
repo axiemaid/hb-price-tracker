@@ -144,9 +144,10 @@ async function init() {
   const changeMap = {};
   const salesCountMap = {};
   
+  // Use date strings (YYYY-MM-DD) for comparison to avoid time-of-day issues
   const now = new Date();
-  const day30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const day60 = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+  const day30Str = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const day60Str = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   
   // Mean helper
   const mean = arr => arr.length === 0 ? null : arr.reduce((a, b) => a + b, 0) / arr.length;
@@ -161,15 +162,12 @@ async function init() {
     if (gradeASales.length > 0) {
       // Last 30 days sales for current price (mean)
       const recent30 = gradeASales
-        .filter(s => new Date(s.sold_date) >= day30)
+        .filter(s => s.sold_date >= day30Str)
         .map(s => s.price_jpy);
       
       // Previous 30 days (30-60 days ago) for comparison
       const prev30 = gradeASales
-        .filter(s => {
-          const d = new Date(s.sold_date);
-          return d >= day60 && d < day30;
-        })
+        .filter(s => s.sold_date >= day60Str && s.sold_date < day30Str)
         .map(s => s.price_jpy);
       
       // Current price: mean of last 30 days (fallback to last 10 sales if not enough)
