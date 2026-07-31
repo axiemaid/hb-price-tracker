@@ -1566,6 +1566,22 @@
       "set": "Grand Line Compilation 2",
       "released": "2001",
       "image": "images/c435.png"
+    },
+    {
+      "id": "s100",
+      "cardType": "special",
+      "name": {
+        "en": "Miss All Sunday",
+        "ja": "ミス・オールサンデー"
+      },
+      "title": {
+        "en": "The Mysterious Supreme Commander",
+        "ja": "謎の最高司令官"
+      },
+      "series": "One Piece Hyper Battle",
+      "set": "Grand Line Compilation 1",
+      "released": "2001",
+      "image": "images/s100.png"
     }
   ],
   "scraped": "2026-05-05T06:39:55.306Z"
