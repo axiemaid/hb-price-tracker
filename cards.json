@@ -1537,6 +1537,43 @@
       "sourceUrl": "https://grandlinewiki.net/tcg/hyperbattle/s08.html"
     },
     {
+      "id": "s13",
+      "cardType": "special",
+      "name": {
+        "en": "Sanji",
+        "ja": "サンジ"
+      },
+      "title": {
+        "en": "Cook",
+        "ja": "料理人"
+      },
+      "series": "One Piece Hyper Battle",
+      "set": "Second Stage",
+      "released": "January, 2000",
+      "ruleSets": [
+        "EX Rule",
+        "Grand Rule"
+      ],
+      "marks": [
+        "Special"
+      ],
+      "types": [
+        "Special"
+      ],
+      "power": 200,
+      "powerText": "200 → –",
+      "description": {
+        "en": "Draw a card from your deck and add its base power to this card. Then, put that card at the bottom of your deck.",
+        "ja": "自分の山札からカードを1枚引き、そのカードの元のパワーを足す。その後、そのカードを自分の山札 の一番下に置く。"
+      },
+      "flavorText": {
+        "en": "It smells delicious, right?",
+        "ja": "クソうめェだろ"
+      },
+      "image": "images/s13.png",
+      "sourceUrl": "https://grandlinewiki.net/tcg/hyperbattle/s13.html"
+    },
+    {
       "id": "c370",
       "cardType": "character",
       "name": {
