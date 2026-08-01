@@ -240,10 +240,12 @@ async function init() {
         const id = c.id;
         if (/^c([01]?[0-9]|2[0-9]|3[0-4])$/.test(id)) return '0' + id;
         if (/^s0[1-8]$/.test(id)) return '1' + id;
-        // Other cards: sort by padded numeric ID (same as ID sort)
+        // Other cards: c prefix first (2), then s prefix (3)
         const numMatch = id.match(/\\d+$/);
         const padded = numMatch ? numMatch[0].padStart(4, '0') : '0000';
-        return '2' + padded;
+        if (id.startsWith('c')) return '2' + padded;
+        if (id.startsWith('s')) return '3' + padded;
+        return '4' + padded;
       };
       sorted.sort((a, b) => orderKey(a).localeCompare(orderKey(b)));
     } else {
