@@ -39,7 +39,9 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .table-view tr:last-child td{border-bottom:none}
 .table-view tr:hover td{background:#1e2d4a22}
 .table-view td.id{text-transform:uppercase;color:#fff;width:60px;padding-left:36px}
-.table-view td.name{width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.table-view td.name{width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:10px}
+.table-view td.name img{width:32px;height:44px;object-fit:cover;border-radius:4px;flex-shrink:0;background:#1e2d4a}
+.table-view td.name .name-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .table-view td.price{color:#d4a94c;width:90px;text-align:right}
 .table-view td.change{width:70px;text-align:right}
 .table-view td.change.up{color:#4a9e4e}
@@ -305,7 +307,7 @@ async function init() {
       
       return `<tr onclick="location.href='card.html?id=${c.id}'" style="cursor:pointer">
         <td class="id">${c.id.toUpperCase()}</td>
-        <td class="name">${displayName}</td>
+        <td class="name"><img src="images/thumbnails/${c.id}.webp" alt="" loading="lazy" onerror="this.style.display='none'"><span class="name-text">${displayName}</span></td>
         ${price != null
           ? `<td class="price">¥${price.toLocaleString()}</td>`
           : '<td class="price">—</td>'}
