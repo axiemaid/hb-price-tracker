@@ -101,8 +101,8 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
     <input type="text" id="filterInput" placeholder="Card ID…">
   </div>
   <div class="set-filter">
-    <label><input type="checkbox" id="setFirstStage" checked> First Stage</label>
-    <label><input type="checkbox" id="setOther" checked> Other</label>
+    <label><input type="checkbox" id="setFirstStage"> First Stage</label>
+    <label><input type="checkbox" id="setOther"> Other</label>
   </div>
   <div class="view-toggle">
     <button class="view-btn active" id="gridBtn" aria-label="Grid view">
@@ -195,6 +195,7 @@ async function init() {
   });
 
   let currentView = 'grid';
+  let userInteracted = false;
 
   function render(sortBy, filterText) {
     let filtered = cardList;
@@ -213,8 +214,12 @@ async function init() {
     } else if (!showFirstStage && showOther) {
       filtered = filtered.filter(c => c.set !== 'First Stage');
     } else if (!showFirstStage && !showOther) {
-      filtered = []; // Show nothing if both unchecked
+      if (userInteracted) {
+        filtered = []; // Show nothing if both unchecked after interaction
+      }
+      // else show all (initial state)
     }
+    // If both checked, show all (no filter)
 
     let sorted = [...filtered];
     if (sortBy === 'price-asc') {
@@ -385,8 +390,8 @@ async function init() {
   };
   sortEl.addEventListener('change', update);
   filterEl.addEventListener('input', update);
-  document.getElementById('setFirstStage').addEventListener('change', update);
-  document.getElementById('setOther').addEventListener('change', update);
+  document.getElementById('setFirstStage').addEventListener('change', () => { userInteracted = true; update(); });
+  document.getElementById('setOther').addEventListener('change', () => { userInteracted = true; update(); });
   gridBtn.addEventListener('click', () => setView('grid'));
   tableBtn.addEventListener('click', () => setView('table'));
   update();
