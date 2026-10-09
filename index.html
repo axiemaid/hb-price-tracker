@@ -214,10 +214,7 @@ async function init() {
     } else if (!showFirstStage && showOther) {
       filtered = filtered.filter(c => c.set !== 'First Stage');
     } else if (!showFirstStage && !showOther) {
-      if (userInteracted) {
-        filtered = []; // Show nothing if both unchecked after interaction
-      }
-      // else show all (initial state)
+      // Both unchecked — show all (same as initial state)
     }
     // If both checked, show all (no filter)
 
