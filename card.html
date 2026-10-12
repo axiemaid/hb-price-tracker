@@ -328,11 +328,18 @@ async function init() {
     
     const col = document.createElement('div');
     col.className = 'price-col';
+    col.style.cursor = 'pointer';
     col.innerHTML = `
       <div class="grade-label" style="color:${cfg.color}">${cfg.label}</div>
       <div class="price-big">¥${priceMean.toLocaleString()}</div>
       <div class="detail">${label}</div>
     `;
+    col.addEventListener('click', () => {
+      activeFilter = activeFilter === g ? 'All' : g;
+      renderTabs();
+      renderSales();
+      filterChart();
+    });
     priceRow.appendChild(col);
   });
 
