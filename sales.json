@@ -67076,5 +67076,60 @@
     "grade": "B",
     "notes": "",
     "logged_at": "2026-11-04T05:57:07.440Z"
+  },
+  {
+    "item_id": "m29006967781",
+    "title": "1999年製　初期　ゴムゴムの実　悪魔の実　S03 ワンピース　ハイパーバトル",
+    "price_jpy": 23500,
+    "price_display": "¥23,500",
+    "sold_date": "2026-11-05",
+    "card_id": "s03",
+    "grade": "C",
+    "notes": "",
+    "logged_at": "2026-11-05T04:38:26.703Z"
+  },
+  {
+    "item_id": "m80028552999",
+    "title": "ワンピース ハイパーバトル ルフィ 船長の資質 S02 1999 ワンオーナー",
+    "price_jpy": 5000,
+    "price_display": "¥5,000",
+    "sold_date": "2026-11-05",
+    "card_id": "s02",
+    "grade": "B",
+    "notes": "",
+    "logged_at": "2026-11-05T04:39:23.457Z"
+  },
+  {
+    "item_id": "m37215756381",
+    "title": "ワンピース カードダス ルフィ 船長の資質 S02",
+    "price_jpy": 5000,
+    "price_display": "¥5,000",
+    "sold_date": "2026-11-05",
+    "card_id": "s02",
+    "grade": "A",
+    "notes": "",
+    "logged_at": "2026-11-05T04:40:09.692Z"
+  },
+  {
+    "item_id": "m44035659717",
+    "title": "ワンピース カードダス ルフィ 船長の資質",
+    "price_jpy": 2500,
+    "price_display": "¥2,500",
+    "sold_date": "2026-11-05",
+    "card_id": "s02",
+    "grade": "C",
+    "notes": "",
+    "logged_at": "2026-11-05T04:40:46.041Z"
+  },
+  {
+    "item_id": "m67266152646",
+    "title": "ワンピース カードダス ゴムゴムの実 S03",
+    "price_jpy": 60000,
+    "price_display": "¥60,000",
+    "sold_date": "2026-11-05",
+    "card_id": "s03",
+    "grade": "A",
+    "notes": "",
+    "logged_at": "2026-11-05T04:44:24.523Z"
   }
 ]
