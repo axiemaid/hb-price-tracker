@@ -362,6 +362,8 @@ async function init() {
   const originalColors = priceChart.data.datasets.map(ds => ({
     backgroundColor: ds.backgroundColor,
     borderColor: ds.borderColor,
+    pointBorderColor: ds.pointBorderColor,
+    pointBorderWidth: ds.pointBorderWidth,
   }));
 
   function filterChart() {
@@ -375,10 +377,16 @@ async function init() {
       if (active) {
         ds.backgroundColor = orig.backgroundColor;
         ds.borderColor = orig.borderColor;
+        ds.pointBorderColor = orig.pointBorderColor;
+        ds.pointBorderWidth = orig.pointBorderWidth;
       } else {
         // Dim to ~15% opacity
         ds.backgroundColor = (orig.backgroundColor || '') + '26';
         ds.borderColor = (orig.borderColor || '') + '26';
+        ds.pointBorderColor = Array.isArray(orig.pointBorderColor)
+          ? orig.pointBorderColor.map(() => '#1e2d4a26')
+          : '#1e2d4a26';
+        ds.pointBorderWidth = 0;
       }
     });
     priceChart.update();
