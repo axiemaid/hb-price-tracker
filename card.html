@@ -60,6 +60,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .sale-list .sale-grade{flex-shrink:0;width:20px;font-size:.7em;font-weight:700;text-align:center}
 .sale-list .sale-price{color:#fff;font-weight:600;flex-shrink:0;width:70px;text-align:right}
 .sale-list .sale-title{color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.err-badge{display:inline-block;background:rgba(239,68,68,.2);color:#ef4444;font-size:10px;font-weight:700;padding:0 4px;border-radius:3px;margin-left:3px;vertical-align:middle}
 .sale-link{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:inherit;width:100%}
 .sale-link:hover .sale-title{color:#aaa}
 .sale-link:hover .sale-price{color:#d4a94c}
@@ -204,16 +205,18 @@ async function init() {
   const byGrade = {};
   sales.forEach(s => {
     if (!byGrade[s.grade]) byGrade[s.grade] = [];
-    byGrade[s.grade].push({ x: s.sold_date, y: s.price_jpy, title: s.title, id: s.item_id });
+    byGrade[s.grade].push({ x: s.sold_date, y: s.price_jpy, title: s.title, id: s.item_id, error_print: !!s.error_print });
   });
 
   const datasets = Object.entries(GRADE_CONFIG)
     .filter(([g]) => byGrade[g] && byGrade[g].length > 0)
     .map(([grade, cfg]) => ({
       label: cfg.label,
-      data: byGrade[grade].map(d => ({ x: d.x, y: d.y, title: d.title, id: d.id })),
+      data: byGrade[grade].map(d => ({ x: d.x, y: d.y, title: d.title, id: d.id, error_print: d.error_print })),
       backgroundColor: cfg.color,
       borderColor: cfg.color,
+      pointBorderColor: byGrade[grade].map(d => d.error_print ? '#ef4444' : cfg.color),
+      pointBorderWidth: byGrade[grade].map(d => d.error_print ? 2 : 0),
       pointRadius: window.innerWidth < 600 ? 4 : 5,
       pointHoverRadius: window.innerWidth < 600 ? 6 : 8,
       pointStyle: 'circle',
@@ -402,7 +405,7 @@ async function init() {
       const cfg = GRADE_CONFIG[s.grade] || { color: '#8a8070' };
       return `<li><a href="https://jp.mercari.com/item/${s.item_id}" target="_blank" rel="noopener" class="sale-link">
         <span class="sale-date">${s.sold_date}</span>
-        <span class="sale-grade" style="color:${cfg.color}">${s.grade}</span>
+        <span class="sale-grade" style="color:${cfg.color}">${s.grade}${s.error_print ? '<span class="err-badge">朗</span>' : ''}</span>
         <span class="sale-price">¥${s.price_jpy.toLocaleString()}</span>
         <span class="sale-title">${(s.title||'').length > 45 ? s.title.slice(0,45)+'…' : s.title}</span>
       </a></li>`;
