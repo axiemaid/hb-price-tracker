@@ -264,6 +264,17 @@ async function init() {
             padding: window.innerWidth < 600 ? 8 : 16,
             font: { size: window.innerWidth < 600 ? 10 : 12 },
             filter: () => true,
+            generateLabels: (chart) => {
+              const datasets = chart.data.datasets;
+              return datasets.filter(ds => !ds.label.includes('Trend')).map((ds, i) => ({
+                text: ds.label,
+                fillStyle: originalColors[i]?.backgroundColor || ds.backgroundColor,
+                strokeStyle: originalColors[i]?.borderColor || ds.borderColor,
+                lineWidth: 0,
+                hidden: false,
+                datasetIndex: i,
+              }));
+            },
           },
         },
         tooltip: {
