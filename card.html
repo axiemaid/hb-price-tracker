@@ -399,7 +399,7 @@ async function init() {
           if (Array.isArray(fullWidth)) ds.pointBorderWidth = idxs.map(idx => fullWidth[idx]);
           // Apply error-only dimming on top of grade restore
           if (errorOnly) {
-            ds.backgroundColor = (orig.backgroundColor || '') + '26';
+            ds.backgroundColor = idxs.map(idx => fullData[idx].error_print ? orig.backgroundColor : (orig.backgroundColor || '#1e2d4a') + '26');
             ds.borderColor = (orig.borderColor || '') + '26';
             ds.pointBorderColor = idxs.map(idx => fullData[idx].error_print ? fullBorder[idx] : (orig.backgroundColor || '#1e2d4a') + '26');
             ds.pointBorderWidth = idxs.map(idx => fullData[idx].error_print ? fullWidth[idx] : 0);
@@ -482,7 +482,7 @@ async function init() {
         // Apply error-only dimming
         const orig = originalColors[i];
         if (errorOnly) {
-          ds.backgroundColor = (orig.backgroundColor || '') + '26';
+          ds.backgroundColor = idxs.map(idx => fullData[idx].error_print ? orig.backgroundColor : (orig.backgroundColor || '#1e2d4a') + '26');
           ds.borderColor = (orig.borderColor || '') + '26';
           ds.pointBorderColor = idxs.map(idx => fullData[idx].error_print ? fullBorder[idx] : (orig.backgroundColor || '#1e2d4a') + '26');
           ds.pointBorderWidth = idxs.map(idx => fullData[idx].error_print ? fullWidth[idx] : 0);
