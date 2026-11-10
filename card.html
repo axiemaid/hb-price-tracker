@@ -349,6 +349,17 @@ async function init() {
     pointBorderWidth: ds.pointBorderWidth,
   }));
 
+  // Range/error state — declared early so renderSales/filterChart can use them
+  let chartRange = 'all';
+  let errorOnly = false;
+
+  function getFilteredIdxs(fullData) {
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    let idxs = fullData.map((_, idx) => idx);
+    if (chartRange === '30d') idxs = idxs.filter(idx => new Date(fullData[idx].x) >= cutoff);
+    return idxs;
+  }
+
   function filterChart() {
     const isAll = activeFilter === 'All';
     priceChart.data.datasets.forEach((ds, i) => {
@@ -425,17 +436,6 @@ async function init() {
 
   renderTabs();
   renderSales();
-
-  // Range toggle
-  let chartRange = 'all';
-  let errorOnly = false;
-
-  function getFilteredIdxs(fullData) {
-    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    let idxs = fullData.map((_, idx) => idx);
-    if (chartRange === '30d') idxs = idxs.filter(idx => new Date(fullData[idx].x) >= cutoff);
-    return idxs;
-  }
 
   function applyRangeFilter() {
     const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
