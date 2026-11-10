@@ -232,37 +232,6 @@ async function init() {
       showLine: false,
     }));
 
-  // Trend lines
-  Object.entries(GRADE_CONFIG).forEach(([grade, cfg]) => {
-    const pts = byGrade[grade];
-    if (!pts || pts.length < 3) return;
-    const sorted = [...pts].sort((a, b) => new Date(a.x) - new Date(b.x));
-    const xs = sorted.map(p => new Date(p.x).getTime());
-    const ys = sorted.map(p => p.y);
-    const n = xs.length;
-    const sumX = xs.reduce((a, b) => a + b, 0);
-    const sumY = ys.reduce((a, b) => a + b, 0);
-    const sumXY = xs.reduce((a, x, i) => a + x * ys[i], 0);
-    const sumX2 = xs.reduce((a, x) => a + x * x, 0);
-    const denom = n * sumX2 - sumX * sumX;
-    if (denom === 0) return;
-    const slope = (n * sumXY - sumX * sumY) / denom;
-    const intercept = (sumY - slope * sumX) / n;
-    datasets.push({
-      label: grade + ' Trend',
-      data: [
-        { x: sorted[0].x, y: Math.round(slope * xs[0] + intercept) },
-        { x: sorted[sorted.length - 1].x, y: Math.round(slope * xs[xs.length - 1] + intercept) },
-      ],
-      borderColor: cfg.color + '66',
-      borderWidth: 2,
-      borderDash: [6, 4],
-      pointRadius: 0,
-      showLine: true,
-      fill: false,
-    });
-  });
-
   const ctx = document.getElementById('priceChart').getContext('2d');
   const priceChart = new Chart(ctx, {
     type: 'scatter',
@@ -293,7 +262,7 @@ async function init() {
             usePointStyle: true,
             padding: window.innerWidth < 600 ? 8 : 16,
             font: { size: window.innerWidth < 600 ? 10 : 12 },
-            filter: item => !item.text.includes('Trend'),
+            filter: () => true,
           },
         },
         tooltip: {
@@ -384,8 +353,7 @@ async function init() {
     const isAll = activeFilter === 'All';
     priceChart.data.datasets.forEach((ds, i) => {
       const grade = Object.keys(GRADE_CONFIG).find(g => ds.label === GRADE_CONFIG[g].label);
-      const trendGrade = Object.keys(GRADE_CONFIG).find(g => ds.label === g + ' Trend');
-      const matchGrade = grade || trendGrade;
+      const matchGrade = grade;
       const active = isAll || matchGrade === activeFilter;
       const orig = originalColors[i];
       if (active) {
