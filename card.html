@@ -397,13 +397,23 @@ async function init() {
           ds.data = idxs.map(idx => fullData[idx]);
           if (Array.isArray(fullBorder)) ds.pointBorderColor = idxs.map(idx => fullBorder[idx]);
           if (Array.isArray(fullWidth)) ds.pointBorderWidth = idxs.map(idx => fullWidth[idx]);
+          // Apply error-only dimming on top of grade restore
+          if (errorOnly) {
+            ds.backgroundColor = (orig.backgroundColor || '') + '26';
+            ds.borderColor = (orig.borderColor || '') + '26';
+            ds.pointBorderColor = idxs.map(idx => fullData[idx].error_print ? fullBorder[idx] : (orig.backgroundColor || '#1e2d4a') + '26');
+            ds.pointBorderWidth = idxs.map(idx => fullData[idx].error_print ? fullWidth[idx] : 0);
+          } else {
+            ds.backgroundColor = orig.backgroundColor;
+            ds.borderColor = orig.borderColor;
+          }
         } else {
           ds.data = fullData;
           if (Array.isArray(fullBorder)) ds.pointBorderColor = fullBorder;
           if (Array.isArray(fullWidth)) ds.pointBorderWidth = fullWidth;
+          ds.backgroundColor = orig.backgroundColor;
+          ds.borderColor = orig.borderColor;
         }
-        ds.backgroundColor = orig.backgroundColor;
-        ds.borderColor = orig.borderColor;
       } else {
         ds.backgroundColor = (orig.backgroundColor || '') + '26';
         ds.borderColor = (orig.borderColor || '') + '26';
@@ -455,7 +465,6 @@ async function init() {
     const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     let idxs = fullData.map((_, idx) => idx);
     if (chartRange === '30d') idxs = idxs.filter(idx => new Date(fullData[idx].x) >= cutoff);
-    if (errorOnly) idxs = idxs.filter(idx => fullData[idx].error_print);
     return idxs;
   }
 
@@ -470,6 +479,17 @@ async function init() {
         ds.data = idxs.map(idx => fullData[idx]);
         if (Array.isArray(fullBorder)) ds.pointBorderColor = idxs.map(idx => fullBorder[idx]);
         if (Array.isArray(fullWidth)) ds.pointBorderWidth = idxs.map(idx => fullWidth[idx]);
+        // Apply error-only dimming
+        const orig = originalColors[i];
+        if (errorOnly) {
+          ds.backgroundColor = (orig.backgroundColor || '') + '26';
+          ds.borderColor = (orig.borderColor || '') + '26';
+          ds.pointBorderColor = idxs.map(idx => fullData[idx].error_print ? fullBorder[idx] : (orig.backgroundColor || '#1e2d4a') + '26');
+          ds.pointBorderWidth = idxs.map(idx => fullData[idx].error_print ? fullWidth[idx] : 0);
+        } else {
+          ds.backgroundColor = orig.backgroundColor;
+          ds.borderColor = orig.borderColor;
+        }
       } else {
         ds.data = fullData;
         if (Array.isArray(fullBorder)) ds.pointBorderColor = fullBorder;
