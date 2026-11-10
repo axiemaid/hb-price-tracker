@@ -36,6 +36,10 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card-details .copyable .copied.show{opacity:1}
 .no-data{text-align:center;color:#8a8070;padding:60px 20px;font-size:1.1em}
 .chart-wrap{max-width:960px;margin:0 auto;background:#131a2e;border-radius:12px;padding:24px;border:1px solid #1e2d4a}
+.chart-controls{display:flex;justify-content:flex-end;gap:4px;margin-bottom:12px}
+.range-toggle{padding:4px 12px;border-radius:6px;font-size:.72em;font-weight:600;cursor:pointer;border:1px solid #1e2d4a;background:transparent;color:#8a8070;transition:all .15s}
+.range-toggle:hover{border-color:#4a4438;color:#e8e0d4}
+.range-toggle.active{color:#fff;background:#1e2d4a;border-color:#2e3d5a}
 .price-row{max-width:960px;margin:20px auto 0;background:#131a2e;border:1px solid #1e2d4a;border-radius:10px;padding:16px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .price-col{text-align:center;display:flex;flex-direction:column;align-items:center;border-radius:6px;transition:opacity .15s}
 .price-col:hover{opacity:.6}
@@ -90,6 +94,10 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 <div class="card-header" id="cardHeader"></div>
 
 <div class="chart-wrap" id="chartWrap" style="display:none">
+  <div class="chart-controls">
+    <button class="range-toggle active" data-range="all">All Time</button>
+    <button class="range-toggle" data-range="30d">Past 30 Days</button>
+  </div>
   <canvas id="priceChart"></canvas>
 </div>
 
@@ -302,6 +310,9 @@ async function init() {
     },
   });
 
+  // Store full datasets for range filtering
+  const fullDatasetData = datasets.map(ds => ds.data);
+
   // Grade price row - 30d mean with fallback to last 10
   const priceRow = document.getElementById('priceRow');
   const now = new Date();
@@ -422,6 +433,34 @@ async function init() {
 
   renderTabs();
   renderSales();
+
+  // Range toggle
+  let chartRange = 'all';
+  function applyRangeFilter() {
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    priceChart.data.datasets.forEach((ds, i) => {
+      const orig = fullDatasetData[i];
+      if (chartRange === '30d' && ds.showLine === false) {
+        ds.data = orig.filter(d => new Date(d.x) >= cutoff);
+      } else {
+        ds.data = orig;
+      }
+    });
+    if (chartRange === '30d') {
+      priceChart.options.scales.x.min = cutoff;
+    } else {
+      delete priceChart.options.scales.x.min;
+    }
+    priceChart.update();
+  }
+  document.querySelectorAll('.range-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.range-toggle').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      chartRange = btn.dataset.range;
+      applyRangeFilter();
+    });
+  });
 
   // Last update
   const dates = sales.map(s => new Date(s.logged_at));
