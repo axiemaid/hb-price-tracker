@@ -68214,18 +68214,6 @@
     "logged_at": "2026-11-10T02:23:40.760Z"
   },
   {
-    "item_id": "m62836465450",
-    "title": "【エラーカード】ワンピースカードダス ルフィ 未来の海賊王 C01",
-    "price_jpy": 1000000,
-    "price_display": "¥1,000,000",
-    "sold_date": "2026-11-10",
-    "card_id": "c01",
-    "grade": "C",
-    "notes": "",
-    "error_print": true,
-    "logged_at": "2026-11-10T02:27:08.679Z"
-  },
-  {
     "item_id": "m28235259147",
     "title": "希少　絶版　ワンピース カードダス ハイパーバトル C01 ルフィ 未来の海賊王",
     "price_jpy": 200000,
@@ -68596,5 +68584,65 @@
     "notes": "",
     "error_print": false,
     "logged_at": "2026-11-10T04:11:04.147Z"
+  },
+  {
+    "item_id": "m62836465450",
+    "title": "【エラーカード】ワンピースカードダス ルフィ 未来の海賊王 C01",
+    "price_jpy": 1000000,
+    "price_display": "¥1,000,000",
+    "sold_date": "2026-11-10",
+    "card_id": "c01",
+    "grade": "A",
+    "notes": "",
+    "error_print": true,
+    "logged_at": "2026-11-10T04:12:32.594Z"
+  },
+  {
+    "item_id": "m42166518686",
+    "title": "ワンピース ハイパーバトル カードダス C06 ゾロ 格の違い",
+    "price_jpy": 7500,
+    "price_display": "¥7,500",
+    "sold_date": "2026-11-10",
+    "card_id": "c06",
+    "grade": "B",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-10T04:23:09.636Z"
+  },
+  {
+    "item_id": "m96187083313",
+    "title": "旧ワンピースカード　ハイパーバトル　C06 ゾロ　格の違い",
+    "price_jpy": 9800,
+    "price_display": "¥9,800",
+    "sold_date": "2026-11-09",
+    "card_id": "c06",
+    "grade": "A",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-10T04:29:23.035Z"
+  },
+  {
+    "item_id": "m36398538669",
+    "title": "【美品】ワンピース カードダス ゾロ 格の違い C06",
+    "price_jpy": 29800,
+    "price_display": "¥29,800",
+    "sold_date": "2026-11-08",
+    "card_id": "c06",
+    "grade": "A",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-10T04:32:07.709Z"
+  },
+  {
+    "item_id": "m60549541744",
+    "title": "即購入OK! ワンピース カードゲーム ゾロ 旧裏 初期 格の違い",
+    "price_jpy": 10999,
+    "price_display": "¥10,999",
+    "sold_date": "2026-11-10",
+    "card_id": "c06",
+    "grade": "B",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-10T05:00:49.219Z"
   }
 ]
