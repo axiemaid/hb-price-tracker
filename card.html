@@ -268,8 +268,10 @@ async function init() {
             generateLabels: (chart) => chart.data.datasets.map((ds, i) => ({
               text: ds.label,
               fillStyle: ds.legendColor || ds.backgroundColor,
-              strokeStyle: ds.legendColor || ds.borderColor,
+              strokeStyle: 'transparent',
               lineWidth: 0,
+              pointStyle: 'circle',
+              radius: 5,
               hidden: false,
               datasetIndex: i,
             })),
