@@ -97,7 +97,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
   <div class="chart-controls">
     <button class="range-toggle active" data-range="all">All Time</button>
     <button class="range-toggle" data-range="30d">Past 30 Days</button>
-    <span style="color:#e8e0d4;font-size:.72em;font-weight:600;display:flex;align-items:center;gap:4px;margin-left:8px"><span style="display:inline-block;width:10px;height:10px;border:2px solid #ef4444;border-radius:50%;background:transparent"></span>朗 Error</span>
+    <button class="range-toggle" id="errorToggle" style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:10px;height:10px;border:2px solid #ef4444;border-radius:50%;background:transparent"></span>朗 Error</button>
   </div>
   <canvas id="priceChart"></canvas>
 </div>
@@ -389,13 +389,11 @@ async function init() {
       const active = isAll || matchGrade === activeFilter;
       const orig = originalColors[i];
       if (active) {
-        // Restore from full arrays, re-filtered to current range
         const fullData = fullDatasetData[i];
         const fullBorder = fullPointBorderColor[i];
         const fullWidth = fullPointBorderWidth[i];
-        if (chartRange === '30d' && ds.showLine === false) {
-          const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-          const idxs = fullData.map((d, idx) => new Date(d.x) >= cutoff ? idx : -1).filter(j => j >= 0);
+        if (ds.showLine === false) {
+          const idxs = getFilteredIdxs(fullData);
           ds.data = idxs.map(idx => fullData[idx]);
           if (Array.isArray(fullBorder)) ds.pointBorderColor = idxs.map(idx => fullBorder[idx]);
           if (Array.isArray(fullWidth)) ds.pointBorderWidth = idxs.map(idx => fullWidth[idx]);
@@ -407,7 +405,6 @@ async function init() {
         ds.backgroundColor = orig.backgroundColor;
         ds.borderColor = orig.borderColor;
       } else {
-        // Dim to ~15% opacity
         ds.backgroundColor = (orig.backgroundColor || '') + '26';
         ds.borderColor = (orig.borderColor || '') + '26';
         ds.pointBorderColor = Array.isArray(ds.pointBorderColor)
@@ -452,22 +449,31 @@ async function init() {
 
   // Range toggle
   let chartRange = 'all';
+  let errorOnly = false;
+
+  function getFilteredIdxs(fullData) {
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    let idxs = fullData.map((_, idx) => idx);
+    if (chartRange === '30d') idxs = idxs.filter(idx => new Date(fullData[idx].x) >= cutoff);
+    if (errorOnly) idxs = idxs.filter(idx => fullData[idx].error_print);
+    return idxs;
+  }
+
   function applyRangeFilter() {
     const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     priceChart.data.datasets.forEach((ds, i) => {
-      const origData = fullDatasetData[i];
-      const origBorder = fullPointBorderColor[i];
-      const origWidth = fullPointBorderWidth[i];
-      if (chartRange === '30d' && ds.showLine === false) {
-        // Filter data + border arrays together to keep them aligned
-        const idxs = origData.map((d, idx) => new Date(d.x) >= cutoff ? idx : -1).filter(i => i >= 0);
-        ds.data = idxs.map(idx => origData[idx]);
-        if (Array.isArray(origBorder)) ds.pointBorderColor = idxs.map(idx => origBorder[idx]);
-        if (Array.isArray(origWidth)) ds.pointBorderWidth = idxs.map(idx => origWidth[idx]);
+      const fullData = fullDatasetData[i];
+      const fullBorder = fullPointBorderColor[i];
+      const fullWidth = fullPointBorderWidth[i];
+      if (ds.showLine === false) {
+        const idxs = getFilteredIdxs(fullData);
+        ds.data = idxs.map(idx => fullData[idx]);
+        if (Array.isArray(fullBorder)) ds.pointBorderColor = idxs.map(idx => fullBorder[idx]);
+        if (Array.isArray(fullWidth)) ds.pointBorderWidth = idxs.map(idx => fullWidth[idx]);
       } else {
-        ds.data = origData;
-        if (Array.isArray(origBorder)) ds.pointBorderColor = origBorder;
-        if (Array.isArray(origWidth)) ds.pointBorderWidth = origWidth;
+        ds.data = fullData;
+        if (Array.isArray(fullBorder)) ds.pointBorderColor = fullBorder;
+        if (Array.isArray(fullWidth)) ds.pointBorderWidth = fullWidth;
       }
     });
     if (chartRange === '30d') {
@@ -477,13 +483,20 @@ async function init() {
     }
     priceChart.update();
   }
-  document.querySelectorAll('.range-toggle').forEach(btn => {
+  document.querySelectorAll('.range-toggle[data-range]').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.range-toggle').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.range-toggle[data-range]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       chartRange = btn.dataset.range;
       applyRangeFilter();
     });
+  });
+
+  const errorBtn = document.getElementById('errorToggle');
+  errorBtn.addEventListener('click', () => {
+    errorOnly = !errorOnly;
+    errorBtn.classList.toggle('active', errorOnly);
+    applyRangeFilter();
   });
 
   // Last update
