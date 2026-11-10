@@ -409,7 +409,8 @@ async function init() {
   }
 
   function renderSales() {
-    const filtered = activeFilter === 'All' ? allSorted : allSorted.filter(s => s.grade === activeFilter);
+    let filtered = activeFilter === 'All' ? allSorted : allSorted.filter(s => s.grade === activeFilter);
+    if (errorOnly) filtered = filtered.filter(s => s.error_print);
     document.getElementById('saleCount').textContent = filtered.length + ' sale' + (filtered.length !== 1 ? 's' : '');
     saleListEl.innerHTML = filtered.map(s => {
       const cfg = GRADE_CONFIG[s.grade] || { color: '#8a8070' };
@@ -485,6 +486,7 @@ async function init() {
     errorOnly = !errorOnly;
     errorBtn.classList.toggle('active', errorOnly);
     applyRangeFilter();
+    renderSales();
   });
 
   // Last update
