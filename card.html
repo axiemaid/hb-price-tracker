@@ -226,7 +226,7 @@ async function init() {
       backgroundColor: cfg.color,
       borderColor: cfg.color,
       pointBorderColor: byGrade[grade].map(d => d.error_print ? '#ef4444' : cfg.color),
-      pointBorderWidth: byGrade[grade].map(d => d.error_print ? 2 : 0),
+      pointBorderWidth: byGrade[grade].map(d => d.error_print ? 1 : 0),
       pointRadius: window.innerWidth < 600 ? 4 : 5,
       pointHoverRadius: window.innerWidth < 600 ? 6 : 8,
       pointStyle: 'circle',
