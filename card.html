@@ -438,7 +438,9 @@ async function init() {
   renderSales();
 
   function applyRangeFilter() {
-    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    let cutoff = null;
+    if (chartRange === '30d') cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    else if (chartRange === '90d') cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
     priceChart.data.datasets.forEach((ds, i) => {
       const fullData = fullDatasetData[i];
       const fullBorder = fullPointBorderColor[i];
@@ -465,7 +467,7 @@ async function init() {
         if (Array.isArray(fullWidth)) ds.pointBorderWidth = fullWidth;
       }
     });
-    if (chartRange === '30d') {
+    if (cutoff) {
       priceChart.options.scales.x.min = cutoff;
     } else {
       delete priceChart.options.scales.x.min;
