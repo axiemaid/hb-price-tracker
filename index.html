@@ -54,14 +54,12 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card .info{padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
 .card .card-id{font-size:.75em;color:#8a8070;text-transform:uppercase;letter-spacing:1px}
 .card .card-name{font-size:.95em;color:#fff;min-height:2.4em}
-.card .card-price{font-size:1em;color:#d4a94c}
+.card .card-price{font-size:.85em;color:#d4a94c;line-height:1.3}
 .card .change-up{color:#4a9e4e}
 .card .change-down{color:#c44d4d}
 .card .card-sold{color:#8a8070}
 .card .no-sales{font-size:.8em;color:#4a4438;font-style:italic}
-.card .err-price{font-size:.85em;color:#c0a060}
-.card .err-price .change-up{color:#4a9e4e}
-.card .err-price .change-down{color:#c44d4d}
+
 .footer{text-align:center;color:#8a8070;font-size:.85em;margin-top:32px}
 .footer a{color:#d4a94c}
 @media(max-width:600px){
@@ -304,7 +302,7 @@ async function init() {
       // Error line only if error sales exist
       let errHtml = '';
       if (errPrice != null) {
-        errHtml = `<div class="card-price err-price">エラー ${priceLine(errPrice, errChange)}</div>`;
+        errHtml = `<div class="card-price">朗 ${priceLine(errPrice, errChange)}</div>`;
       }
       
       return `<a href="card.html?id=${c.id}" class="card">
