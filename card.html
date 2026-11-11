@@ -40,7 +40,11 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .range-toggle{padding:4px 12px;border-radius:6px;font-size:.72em;font-weight:600;cursor:pointer;border:1px solid #1e2d4a;background:transparent;color:#8a8070;transition:all .15s}
 .range-toggle:hover{border-color:#4a4438;color:#e8e0d4}
 .range-toggle.active{color:#fff;background:#1e2d4a;border-color:#2e3d5a}
-.price-row{max-width:960px;margin:20px auto 0;background:#131a2e;border:1px solid #1e2d4a;border-radius:10px;padding:16px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.price-section{max-width:960px;margin:20px auto 0;background:#131a2e;border:1px solid #1e2d4a;border-radius:10px;padding:16px 20px}
+.price-section .section-label{font-size:.75em;text-transform:uppercase;letter-spacing:1px;color:#8a8070;margin-bottom:10px}
+.price-section .section-label.err{color:#c44d4d}
+.price-section .section-label.err .kanji{font-weight:700}
+.price-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .price-col{text-align:center;display:flex;flex-direction:column;align-items:center;border-radius:6px;transition:opacity .15s}
 .price-col:hover{opacity:.6}
 .price-col .grade-label{font-size:.7em;text-transform:uppercase;letter-spacing:1px;font-weight:700;min-height:2.4em;display:flex;align-items:center;justify-content:center}
@@ -103,7 +107,8 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
   <canvas id="priceChart"></canvas>
 </div>
 
-<div class="price-row" id="priceRow"></div>
+<div class="price-section" id="priceRowStd"></div>
+<div class="price-section" id="priceRowErr" style="margin-top:12px"></div>
 
 <div class="history-box" id="historyBox" style="display:none">
   <h2>Sales History</h2>
@@ -286,59 +291,77 @@ async function init() {
   const fullPointBorderColor = datasets.map(ds => ds.pointBorderColor);
   const fullPointBorderWidth = datasets.map(ds => ds.pointBorderWidth);
 
-  // Grade price row - 30d mean with fallback to last 10
-  const priceRow = document.getElementById('priceRow');
+  // Grade price rows - standard and error, 30d mean with fallback to last 10
+  const priceRowStd = document.getElementById('priceRowStd');
+  const priceRowErr = document.getElementById('priceRowErr');
   const now = new Date();
   const day30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   const mean = arr => arr.length === 0 ? null : arr.reduce((a, b) => a + b, 0) / arr.length;
   
-  ['A', 'B', 'C', 'D'].forEach(g => {
-    const pts = byGrade[g];
-    if (!pts || pts.length === 0) return;
-    const cfg = GRADE_CONFIG[g];
-    const sorted = [...pts].sort((a, b) => new Date(b.x) - new Date(a.x));
+  function renderPriceSection(containerEl, salesSubset, label, labelClass, isError) {
+    const gradesPresent = ['A','B','C','D'].filter(g => salesSubset.some(s => s.grade === g));
+    if (gradesPresent.length === 0) return;
     
-    // Last 30 days sales
-    const recent30 = sorted
-      .filter(s => new Date(s.x) >= day30)
-      .map(s => s.y);
+    containerEl.innerHTML = '';
+    const labelEl = document.createElement('div');
+    labelEl.className = 'section-label' + (labelClass ? ' ' + labelClass : '');
+    labelEl.textContent = label;
+    containerEl.appendChild(labelEl);
     
-    let priceMean, label;
-    if (recent30.length >= 3) {
-      priceMean = Math.round(mean(recent30));
-      label = '30d avg';
-    } else {
-      // Fallback to last 10 sales
-      const last10 = sorted.slice(0, 10).map(s => s.y);
-      priceMean = Math.round(mean(last10));
-      label = `Last ${last10.length} avg`;
-    }
+    const row = document.createElement('div');
+    row.className = 'price-row';
     
-    const col = document.createElement('div');
-    col.className = 'price-col';
-    col.style.cursor = 'pointer';
-    col.innerHTML = `
-      <div class="grade-label" style="color:${cfg.color}">${cfg.label}</div>
-      <div class="price-big">¥${priceMean.toLocaleString()}</div>
-      <div class="detail">${label}</div>
-    `;
-    col.addEventListener('click', () => {
-      activeFilter = activeFilter === g ? 'All' : g;
-      renderTabs();
-      renderSales();
-      filterChart();
+    gradesPresent.forEach(g => {
+      const pts = salesSubset.filter(s => s.grade === g).sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
+      const cfg = GRADE_CONFIG[g];
+      const recent30 = pts.filter(s => new Date(s.sold_date) >= day30).map(s => s.price_jpy);
+      let priceMean, lbl;
+      if (recent30.length >= 3) {
+        priceMean = Math.round(mean(recent30));
+        lbl = '30d avg';
+      } else {
+        const last10 = pts.slice(0, 10).map(s => s.price_jpy);
+        priceMean = Math.round(mean(last10));
+        lbl = `Last ${last10.length} avg`;
+      }
+      const col = document.createElement('div');
+      col.className = 'price-col';
+      col.style.cursor = 'pointer';
+      col.innerHTML = `
+        <div class="grade-label" style="color:${cfg.color}">${cfg.label}</div>
+        <div class="price-big">¥${priceMean.toLocaleString()}</div>
+        <div class="detail">${lbl}</div>
+      `;
+      col.addEventListener('click', () => {
+        activeFilter = activeFilter === g ? 'All' : g;
+        renderTabs();
+        renderSales();
+        filterChart();
+      });
+      row.appendChild(col);
     });
-    priceRow.appendChild(col);
-  });
+    containerEl.appendChild(row);
+  }
+  
+  const stdSales = sales.filter(s => !s.error_print);
+  const errSales = sales.filter(s => s.error_print);
+  renderPriceSection(priceRowStd, stdSales, 'Standard Sales', '', false);
+  renderPriceSection(priceRowErr, errSales, 'Error Print Sales 朗', 'err', true);
 
   // Sales history box
-  const allSorted = sales.slice().sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
+  const stdSorted = stdSales.slice().sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
+  const errSorted = errSales.slice().sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
   const historyBox = document.getElementById('historyBox');
   const gradeTabs = document.getElementById('gradeTabs');
   const saleListEl = document.getElementById('saleList');
   historyBox.style.display = '';
 
-  const availableGrades = ['A','B','C','D'].filter(g => byGrade[g] && byGrade[g].length > 0);
+  // Build grade tabs from standard + error sales combined
+  const stdByGrade = {};
+  stdSales.forEach(s => { if (!stdByGrade[s.grade]) stdByGrade[s.grade] = []; stdByGrade[s.grade].push(s); });
+  const errByGrade = {};
+  errSales.forEach(s => { if (!errByGrade[s.grade]) errByGrade[s.grade] = []; errByGrade[s.grade].push(s); });
+  const availableGrades = ['A','B','C','D'].filter(g => (stdByGrade[g] && stdByGrade[g].length > 0) || (errByGrade[g] && errByGrade[g].length > 0));
   const tabs = ['All', ...availableGrades];
   let activeFilter = 'All';
 
@@ -422,10 +445,17 @@ async function init() {
   }
 
   function renderSales() {
-    let filtered = activeFilter === 'All' ? allSorted : allSorted.filter(s => s.grade === activeFilter);
-    if (errorOnly) filtered = filtered.filter(s => s.error_print);
-    document.getElementById('saleCount').textContent = filtered.length + ' sale' + (filtered.length !== 1 ? 's' : '');
-    saleListEl.innerHTML = filtered.map(s => {
+    // Standard sales
+    let stdFiltered = activeFilter === 'All' ? stdSorted : stdSorted.filter(s => s.grade === activeFilter);
+    // Error sales
+    let errFiltered = activeFilter === 'All' ? errSorted : errSorted.filter(s => s.grade === activeFilter);
+    
+    if (errorOnly) { stdFiltered = []; }
+    
+    const totalCount = stdFiltered.length + errFiltered.length;
+    document.getElementById('saleCount').textContent = totalCount + ' sale' + (totalCount !== 1 ? 's' : '');
+    
+    const renderSaleItem = s => {
       const cfg = GRADE_CONFIG[s.grade] || { color: '#8a8070' };
       return `<li><a href="https://jp.mercari.com/item/${s.item_id}" target="_blank" rel="noopener" class="sale-link">
         <span class="sale-date">${s.sold_date}</span>
@@ -433,7 +463,20 @@ async function init() {
         <span class="sale-price">¥${s.price_jpy.toLocaleString()}</span>
         <span class="sale-title">${(s.title||'').length > 45 ? s.title.slice(0,45)+'…' : s.title}</span>
       </a></li>`;
-    }).join('');
+    };
+    
+    let html = '';
+    if (stdFiltered.length > 0) {
+      html += stdFiltered.map(renderSaleItem).join('');
+    }
+    if (errFiltered.length > 0 && !errorOnly) {
+      // Show error sales after standard, with a subtle separator if both exist
+      if (stdFiltered.length > 0) {
+        html += '<li style="border-bottom:none;padding:4px 0"><span style="color:#c44d4d;font-size:.7em;font-weight:700">朗 Error Print</span></li>';
+      }
+      html += errFiltered.map(renderSaleItem).join('');
+    }
+    saleListEl.innerHTML = html;
   }
 
   renderTabs();
