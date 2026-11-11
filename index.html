@@ -59,6 +59,9 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card .change-down{color:#c44d4d}
 .card .card-sold{color:#8a8070}
 .card .no-sales{font-size:.8em;color:#4a4438;font-style:italic}
+.card .err-price{font-size:.85em;color:#c0a060}
+.card .err-price .change-up{color:#4a9e4e}
+.card .err-price .change-down{color:#c44d4d}
 .footer{text-align:center;color:#8a8070;font-size:.85em;margin-top:32px}
 .footer a{color:#d4a94c}
 @media(max-width:600px){
@@ -142,8 +145,11 @@ async function init() {
   const cardList = Array.isArray(cards) ? cards : Object.values(cards);
 
   // Precompute price and % change per card using 30-day windows with mean
+  // Separate standard vs error print sales
   const priceMap = {};
   const changeMap = {};
+  const errPriceMap = {};
+  const errChangeMap = {};
   const salesCountMap = {};
   
   // Use date strings (YYYY-MM-DD) for comparison to avoid time-of-day issues
@@ -154,43 +160,50 @@ async function init() {
   // Mean helper
   const mean = arr => arr.length === 0 ? null : arr.reduce((a, b) => a + b, 0) / arr.length;
   
+  // Compute price + change for a set of grade A sales
+  function computeStats(gradeASales) {
+    if (gradeASales.length === 0) return { price: null, change: null };
+    const recent30 = gradeASales
+      .filter(s => s.sold_date >= day30Str)
+      .map(s => s.price_jpy);
+    const prev30 = gradeASales
+      .filter(s => s.sold_date >= day60Str && s.sold_date < day30Str)
+      .map(s => s.price_jpy);
+    
+    let price;
+    if (recent30.length >= 3) {
+      price = Math.round(mean(recent30));
+    } else {
+      const last10 = gradeASales.slice(0, 10).map(s => s.price_jpy);
+      price = last10.length > 0 ? Math.round(mean(last10)) : null;
+    }
+    
+    let change = null;
+    if (recent30.length >= 3 && prev30.length >= 3) {
+      change = ((mean(recent30) - mean(prev30)) / mean(prev30)) * 100;
+    }
+    return { price, change };
+  }
+  
   cardList.forEach(c => {
     const allCardSales = allSales.filter(s => s.card_id === c.id);
-    const gradeASales = allCardSales
-      .filter(s => s.grade === 'A')
-      .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
     salesCountMap[c.id] = allCardSales.length;
     
-    if (gradeASales.length > 0) {
-      // Last 30 days sales for current price (mean)
-      const recent30 = gradeASales
-        .filter(s => s.sold_date >= day30Str)
-        .map(s => s.price_jpy);
-      
-      // Previous 30 days (30-60 days ago) for comparison
-      const prev30 = gradeASales
-        .filter(s => s.sold_date >= day60Str && s.sold_date < day30Str)
-        .map(s => s.price_jpy);
-      
-      // Current price: mean of last 30 days (fallback to last 10 sales if not enough)
-      if (recent30.length >= 3) {
-        priceMap[c.id] = Math.round(mean(recent30));
-      } else {
-        // Not enough recent data, use last 10 sales
-        const last10 = gradeASales.slice(0, 10).map(s => s.price_jpy);
-        priceMap[c.id] = last10.length > 0 ? Math.round(mean(last10)) : null;
-      }
-      
-      // 30d change: compare means
-      if (recent30.length >= 3 && prev30.length >= 3) {
-        const recentAvg = mean(recent30);
-        const prevAvg = mean(prev30);
-        const pctChange = ((recentAvg - prevAvg) / prevAvg) * 100;
-        changeMap[c.id] = pctChange;
-      }
-    } else {
-      priceMap[c.id] = null;
-    }
+    // Standard grade A (no error_print)
+    const stdGradeASales = allCardSales
+      .filter(s => s.grade === 'A' && !s.error_print)
+      .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
+    const stdStats = computeStats(stdGradeASales);
+    priceMap[c.id] = stdStats.price;
+    changeMap[c.id] = stdStats.change;
+    
+    // Error print grade A
+    const errGradeASales = allCardSales
+      .filter(s => s.grade === 'A' && s.error_print)
+      .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
+    const errStats = computeStats(errGradeASales);
+    errPriceMap[c.id] = errStats.price;
+    errChangeMap[c.id] = errStats.change;
   });
 
   let currentView = 'grid';
@@ -261,26 +274,45 @@ async function init() {
       sorted.sort((a, b) => padId(a.id).localeCompare(padId(b.id)));
     }
 
-    // Render grid view
-    const grid = document.getElementById('grid');
-    grid.innerHTML = sorted.map(c => {
-      const price = priceMap[c.id];
-      const change = changeMap[c.id];
-      const salesCount = salesCountMap[c.id] || 0;
+    // Helper to render price line with inline change
+    function priceLine(price, change) {
+      if (price == null) return '<span class="no-sales">No sales</span>';
       let changeHtml = '';
       if (change != null) {
         const cls = change > 0 ? 'change-up' : 'change-down';
         const formatted = (change > 0 ? '+' : '') + change.toFixed(1) + '%';
         changeHtml = ` <span class="${cls}">${formatted}</span>`;
       }
+      return `¥${price.toLocaleString()}${changeHtml}`;
+    }
+    
+    // Render grid view
+    const grid = document.getElementById('grid');
+    grid.innerHTML = sorted.map(c => {
+      const price = priceMap[c.id];
+      const change = changeMap[c.id];
+      const errPrice = errPriceMap[c.id];
+      const errChange = errChangeMap[c.id];
+      
+      let priceHtml;
+      if (price != null) {
+        priceHtml = `<div class="card-price">${priceLine(price, change)}</div>`;
+      } else {
+        priceHtml = '<div class="no-sales">No sales data</div>';
+      }
+      
+      // Error line only if error sales exist
+      let errHtml = '';
+      if (errPrice != null) {
+        errHtml = `<div class="card-price err-price">エラー ${priceLine(errPrice, errChange)}</div>`;
+      }
       
       return `<a href="card.html?id=${c.id}" class="card">
         <img src="images/thumbnails/${c.id}.webp" alt="${c.id}" loading="lazy" onerror="this.style.display='none'">
         <div class="info">
           <div class="card-id">${c.id.toUpperCase()}</div>
-          ${price != null
-            ? `<div class="card-price">¥${price.toLocaleString()}${changeHtml}</div>`
-            : '<div class="no-sales">No sales data</div>'}
+          ${priceHtml}
+          ${errHtml}
         </div>
       </a>`;
     }).join('');
