@@ -445,17 +445,11 @@ async function init() {
   }
 
   function renderSales() {
-    // Standard sales
-    let stdFiltered = activeFilter === 'All' ? stdSorted : stdSorted.filter(s => s.grade === activeFilter);
-    // Error sales
-    let errFiltered = activeFilter === 'All' ? errSorted : errSorted.filter(s => s.grade === activeFilter);
-    
-    if (errorOnly) { stdFiltered = []; }
-    
-    const totalCount = stdFiltered.length + errFiltered.length;
-    document.getElementById('saleCount').textContent = totalCount + ' sale' + (totalCount !== 1 ? 's' : '');
-    
-    const renderSaleItem = s => {
+    let filtered = activeFilter === 'All' ? sales.slice() : sales.filter(s => s.grade === activeFilter);
+    filtered = filtered.sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
+    if (errorOnly) filtered = filtered.filter(s => s.error_print);
+    document.getElementById('saleCount').textContent = filtered.length + ' sale' + (filtered.length !== 1 ? 's' : '');
+    saleListEl.innerHTML = filtered.map(s => {
       const cfg = GRADE_CONFIG[s.grade] || { color: '#8a8070' };
       return `<li><a href="https://jp.mercari.com/item/${s.item_id}" target="_blank" rel="noopener" class="sale-link">
         <span class="sale-date">${s.sold_date}</span>
@@ -463,20 +457,7 @@ async function init() {
         <span class="sale-price">¥${s.price_jpy.toLocaleString()}</span>
         <span class="sale-title">${(s.title||'').length > 45 ? s.title.slice(0,45)+'…' : s.title}</span>
       </a></li>`;
-    };
-    
-    let html = '';
-    if (stdFiltered.length > 0) {
-      html += stdFiltered.map(renderSaleItem).join('');
-    }
-    if (errFiltered.length > 0 && !errorOnly) {
-      // Show error sales after standard, with a subtle separator if both exist
-      if (stdFiltered.length > 0) {
-        html += '<li style="border-bottom:none;padding:4px 0"><span style="color:#c44d4d;font-size:.7em;font-weight:700">朗 Error Print</span></li>';
-      }
-      html += errFiltered.map(renderSaleItem).join('');
-    }
-    saleListEl.innerHTML = html;
+    }).join('');
   }
 
   renderTabs();
