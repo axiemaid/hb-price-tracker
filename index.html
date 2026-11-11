@@ -302,7 +302,7 @@ async function init() {
       // Error line only if error sales exist
       let errHtml = '';
       if (errPrice != null) {
-        errHtml = `<div class="card-price">朗 ${priceLine(errPrice, errChange)}</div>`;
+        errHtml = `<div class="card-price">${priceLine(errPrice, errChange)} <span class="change-down">朗</span></div>`;
       }
       
       return `<a href="card.html?id=${c.id}" class="card">
