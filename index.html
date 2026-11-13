@@ -71,10 +71,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card .grade-col .glabel.ga{color:#d4a94c}
 .card .grade-col .glabel.gb{color:#5b9bd5}
 .card .grade-col .glabel.gc{color:#a78bba}
-.card .price-row{font-size:.75em;line-height:1.5;text-align:right}
-.card .price-row.ga{color:#d4a94c}
-.card .price-row.gb{color:#5b9bd5}
-.card .price-row.gc{color:#a78bba}
+.card .price-row{font-size:.75em;line-height:1.5;color:#d4a94c;text-align:right}
 .card .price-row.na{color:#4a4438;font-style:italic}
 
 .footer{text-align:center;color:#8a8070;font-size:.85em;margin-top:32px}
@@ -340,15 +337,15 @@ async function init() {
             </div>
             <div class="price-col">
               <div class="price-col-header">Reg.</div>
-              <div class="price-row ga${gp.std.A==null?' na':''}">${fmtGrade(gp.std.A)}</div>
-              <div class="price-row gb${gp.std.B==null?' na':''}">${fmtGrade(gp.std.B)}</div>
-              <div class="price-row gc${gp.std.C==null?' na':''}">${fmtGrade(gp.std.C)}</div>
+              <div class="price-row${gp.std.A==null?' na':''}">${fmtGrade(gp.std.A)}</div>
+              <div class="price-row${gp.std.B==null?' na':''}">${fmtGrade(gp.std.B)}</div>
+              <div class="price-row${gp.std.C==null?' na':''}">${fmtGrade(gp.std.C)}</div>
             </div>
             <div class="price-col">
               <div class="price-col-header err">朗</div>
-              <div class="price-row ga${gp.err.A==null?' na':''}">${fmtGrade(gp.err.A)}</div>
-              <div class="price-row gb${gp.err.B==null?' na':''}">${fmtGrade(gp.err.B)}</div>
-              <div class="price-row gc${gp.err.C==null?' na':''}">${fmtGrade(gp.err.C)}</div>
+              <div class="price-row${gp.err.A==null?' na':''}">${fmtGrade(gp.err.A)}</div>
+              <div class="price-row${gp.err.B==null?' na':''}">${fmtGrade(gp.err.B)}</div>
+              <div class="price-row${gp.err.C==null?' na':''}">${fmtGrade(gp.err.C)}</div>
             </div>
           </div>
         </div>
