@@ -61,14 +61,14 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card .err-kanji{color:#c44d4d}
 .card .card-sold{color:#8a8070}
 .card .no-sales{font-size:.8em;color:#4a4438;font-style:italic}
-.card .price-cols{display:flex;gap:8px;margin-top:2px}
+.card .price-cols{display:flex;gap:6px;margin-top:2px}
 .card .price-col{flex:1;min-width:0}
-.card .price-col-header{font-size:.75em;color:#8a8070;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #1e2d4a;padding-bottom:2px;margin-bottom:3px}
+.card .price-col-header{font-size:.65em;color:#8a8070;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #1e2d4a;padding-bottom:2px;margin-bottom:2px}
 .card .price-col-header.err{color:#c44d4d}
-.card .price-row{display:flex;justify-content:space-between;font-size:.85em;line-height:1.5}
-.card .price-row .glabel{color:#8a8070}
-.card .price-row .gval{color:#d4a94c}
-.card .price-row .gval.na{color:#4a4438;font-style:italic}
+.card .grade-col{width:10px;flex-shrink:0}
+.card .grade-col .glabel{font-size:.65em;color:#8a8070;line-height:1.5}
+.card .price-row{font-size:.7em;line-height:1.5;color:#d4a94c;text-align:right}
+.card .price-row.na{color:#4a4438;font-style:italic}
 
 .footer{text-align:center;color:#8a8070;font-size:.85em;margin-top:32px}
 .footer a{color:#d4a94c}
@@ -312,24 +312,30 @@ async function init() {
     const grid = document.getElementById('grid');
     grid.innerHTML = sorted.map(c => {
       const gp = gradePriceMap[c.id] || { std: {}, err: {} };
-      const fmtGrade = v => v != null ? `¥${v.toLocaleString()}` : '—';
+      const fmtGrade = v => v != null ? v.toLocaleString() : '—';
       
       return `<a href="card.html?id=${c.id}" class="card">
         <img src="images/thumbnails/${c.id}.webp" alt="${c.id}" loading="lazy" onerror="this.style.display='none'">
         <div class="info">
           <div class="card-id">${c.id.toUpperCase()}</div>
           <div class="price-cols">
+            <div class="grade-col">
+              <div style="font-size:.65em;color:#8a8070;border-bottom:1px solid #1e2d4a;padding-bottom:2px;margin-bottom:2px">&nbsp;</div>
+              <div class="glabel">A</div>
+              <div class="glabel">B</div>
+              <div class="glabel">C</div>
+            </div>
             <div class="price-col">
               <div class="price-col-header">Reg.</div>
-              <div class="price-row"><span class="glabel">A</span><span class="gval${gp.std.A==null?' na':''}">${fmtGrade(gp.std.A)}</span></div>
-              <div class="price-row"><span class="glabel">B</span><span class="gval${gp.std.B==null?' na':''}">${fmtGrade(gp.std.B)}</span></div>
-              <div class="price-row"><span class="glabel">C</span><span class="gval${gp.std.C==null?' na':''}">${fmtGrade(gp.std.C)}</span></div>
+              <div class="price-row${gp.std.A==null?' na':''}">${fmtGrade(gp.std.A)}</div>
+              <div class="price-row${gp.std.B==null?' na':''}">${fmtGrade(gp.std.B)}</div>
+              <div class="price-row${gp.std.C==null?' na':''}">${fmtGrade(gp.std.C)}</div>
             </div>
             <div class="price-col">
               <div class="price-col-header err">朗</div>
-              <div class="price-row"><span class="glabel">A</span><span class="gval${gp.err.A==null?' na':''}">${fmtGrade(gp.err.A)}</span></div>
-              <div class="price-row"><span class="glabel">B</span><span class="gval${gp.err.B==null?' na':''}">${fmtGrade(gp.err.B)}</span></div>
-              <div class="price-row"><span class="glabel">C</span><span class="gval${gp.err.C==null?' na':''}">${fmtGrade(gp.err.C)}</span></div>
+              <div class="price-row${gp.err.A==null?' na':''}">${fmtGrade(gp.err.A)}</div>
+              <div class="price-row${gp.err.B==null?' na':''}">${fmtGrade(gp.err.B)}</div>
+              <div class="price-row${gp.err.C==null?' na':''}">${fmtGrade(gp.err.C)}</div>
             </div>
           </div>
         </div>
