@@ -63,8 +63,8 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card .no-sales{font-size:.8em;color:#4a4438;font-style:italic}
 .card .price-cols{display:flex;gap:6px;margin-top:2px}
 .card .price-col{flex:1;min-width:0}
-.card .price-col-header{font-size:.65em;color:#8a8070;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #1e2d4a;padding-bottom:2px;margin-bottom:2px}
-.card .price-col-header.err{color:#c44d4d}
+.card .price-col-header{font-size:.65em;color:#8a8070;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #1e2d4a;padding-bottom:2px;margin-bottom:2px;line-height:1.5;height:1.5em;overflow:hidden}
+.card .price-col-header.err{color:#c44d4d;text-transform:none}
 .card .grade-col{width:10px;flex-shrink:0}
 .card .grade-col .glabel{font-size:.65em;color:#8a8070;line-height:1.5}
 .card .price-row{font-size:.7em;line-height:1.5;color:#d4a94c;text-align:right}
@@ -320,7 +320,7 @@ async function init() {
           <div class="card-id">${c.id.toUpperCase()}</div>
           <div class="price-cols">
             <div class="grade-col">
-              <div style="font-size:.65em;color:#8a8070;border-bottom:1px solid #1e2d4a;padding-bottom:2px;margin-bottom:2px">&nbsp;</div>
+              <div style="font-size:.65em;line-height:1.5;height:1.5em;overflow:hidden;border-bottom:1px solid #1e2d4a;padding-bottom:2px;margin-bottom:2px">&nbsp;</div>
               <div class="glabel">A</div>
               <div class="glabel">B</div>
               <div class="glabel">C</div>
