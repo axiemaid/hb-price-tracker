@@ -76,6 +76,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card .price-row{flex:1;font-size:.75em;line-height:1.5;color:#d4a94c;text-align:right;padding-right:4px}
 .card .price-row.na{color:#4a4438;font-style:italic}
 
+.grid-note{max-width:1200px;margin:0 auto 8px;color:#8a8070;font-size:.7em;text-align:center}
 .footer{text-align:center;color:#8a8070;font-size:.85em;margin-top:32px}
 .footer a{color:#d4a94c}
 @media(max-width:1100px){.grid{grid-template-columns:repeat(6,1fr)}}
@@ -142,6 +143,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
   </div>
 </div>
 
+<p class="grid-note" id="gridNote">Prices shown are the average of the last 10 sold listings per grade</p>
 <div class="grid" id="grid"></div>
 <div class="table-view" id="tableView">
   <table>
@@ -397,13 +399,17 @@ async function init() {
     const gridBtn = document.getElementById('gridBtn');
     const tableBtn = document.getElementById('tableBtn');
     
+    const gridNote = document.getElementById('gridNote');
+    
     if (view === 'grid') {
       grid.style.display = 'grid';
+      gridNote.style.display = 'block';
       tableView.style.display = 'none';
       gridBtn.classList.add('active');
       tableBtn.classList.remove('active');
     } else {
       grid.style.display = 'none';
+      gridNote.style.display = 'none';
       tableView.style.display = 'block';
       gridBtn.classList.remove('active');
       tableBtn.classList.add('active');
