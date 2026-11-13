@@ -61,6 +61,14 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card .err-kanji{color:#c44d4d}
 .card .card-sold{color:#8a8070}
 .card .no-sales{font-size:.8em;color:#4a4438;font-style:italic}
+.card .price-cols{display:flex;gap:8px;margin-top:2px}
+.card .price-col{flex:1;min-width:0}
+.card .price-col-header{font-size:.75em;color:#8a8070;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #1e2d4a;padding-bottom:2px;margin-bottom:3px}
+.card .price-col-header.err{color:#c44d4d}
+.card .price-row{display:flex;justify-content:space-between;font-size:.85em;line-height:1.5}
+.card .price-row .glabel{color:#8a8070}
+.card .price-row .gval{color:#d4a94c}
+.card .price-row .gval.na{color:#4a4438;font-style:italic}
 
 .footer{text-align:center;color:#8a8070;font-size:.85em;margin-top:32px}
 .footer a{color:#d4a94c}
@@ -151,6 +159,7 @@ async function init() {
   const errPriceMap = {};
   const errChangeMap = {};
   const salesCountMap = {};
+  const gradePriceMap = {};
   
   // Use date strings (YYYY-MM-DD) for comparison to avoid time-of-day issues
   const now = new Date();
@@ -204,6 +213,19 @@ async function init() {
     const errStats = computeStats(errGradeASales);
     errPriceMap[c.id] = errStats.price;
     errChangeMap[c.id] = errStats.change;
+    
+    // Compute per-grade prices for grid view (A, B, C only)
+    gradePriceMap[c.id] = { std: {}, err: {} };
+    ['A', 'B', 'C'].forEach(g => {
+      const stdG = allCardSales
+        .filter(s => s.grade === g && !s.error_print)
+        .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
+      gradePriceMap[c.id].std[g] = computeStats(stdG).price;
+      const errG = allCardSales
+        .filter(s => s.grade === g && s.error_print)
+        .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
+      gradePriceMap[c.id].err[g] = computeStats(errG).price;
+    });
   });
 
   let currentView = 'grid';
@@ -289,30 +311,27 @@ async function init() {
     // Render grid view
     const grid = document.getElementById('grid');
     grid.innerHTML = sorted.map(c => {
-      const price = priceMap[c.id];
-      const change = changeMap[c.id];
-      const errPrice = errPriceMap[c.id];
-      const errChange = errChangeMap[c.id];
-      
-      let priceHtml;
-      if (price != null) {
-        priceHtml = `<div class="card-price">${priceLine(price, change)}</div>`;
-      } else {
-        priceHtml = '<div class="no-sales">No sales data</div>';
-      }
-      
-      // Error line only if error sales exist
-      let errHtml = '';
-      if (errPrice != null) {
-        errHtml = `<div class="card-price err-line">${priceLine(errPrice, errChange)} <span class="err-kanji">朗</span></div>`;
-      }
+      const gp = gradePriceMap[c.id] || { std: {}, err: {} };
+      const fmtGrade = v => v != null ? `¥${v.toLocaleString()}` : '—';
       
       return `<a href="card.html?id=${c.id}" class="card">
         <img src="images/thumbnails/${c.id}.webp" alt="${c.id}" loading="lazy" onerror="this.style.display='none'">
         <div class="info">
           <div class="card-id">${c.id.toUpperCase()}</div>
-          ${priceHtml}
-          ${errHtml}
+          <div class="price-cols">
+            <div class="price-col">
+              <div class="price-col-header">Reg.</div>
+              <div class="price-row"><span class="glabel">A</span><span class="gval${gp.std.A==null?' na':''}">${fmtGrade(gp.std.A)}</span></div>
+              <div class="price-row"><span class="glabel">B</span><span class="gval${gp.std.B==null?' na':''}">${fmtGrade(gp.std.B)}</span></div>
+              <div class="price-row"><span class="glabel">C</span><span class="gval${gp.std.C==null?' na':''}">${fmtGrade(gp.std.C)}</span></div>
+            </div>
+            <div class="price-col">
+              <div class="price-col-header err">朗</div>
+              <div class="price-row"><span class="glabel">A</span><span class="gval${gp.err.A==null?' na':''}">${fmtGrade(gp.err.A)}</span></div>
+              <div class="price-row"><span class="glabel">B</span><span class="gval${gp.err.B==null?' na':''}">${fmtGrade(gp.err.B)}</span></div>
+              <div class="price-row"><span class="glabel">C</span><span class="gval${gp.err.C==null?' na':''}">${fmtGrade(gp.err.C)}</span></div>
+            </div>
+          </div>
         </div>
       </a>`;
     }).join('');
