@@ -322,8 +322,8 @@ async function init() {
       const gp = gradePriceMap[c.id] || { std: {}, err: {} };
       const fmtGrade = v => {
         if (v == null) return '—';
-        if (v >= 100000) return (v / 1000).toFixed(0) + 'K';
-        return v.toLocaleString();
+        if (v >= 100000) return '¥' + (v / 1000).toFixed(0) + 'K';
+        return '¥' + v.toLocaleString();
       };
       
       return `<a href="card.html?id=${c.id}" class="card">
