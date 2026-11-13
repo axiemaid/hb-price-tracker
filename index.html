@@ -62,18 +62,19 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .card .err-kanji{color:#c44d4d}
 .card .card-sold{color:#8a8070}
 .card .no-sales{font-size:.8em;color:#4a4438;font-style:italic}
-.card .price-cols{display:flex;gap:6px;margin-top:2px}
-.card .price-col{flex:1;min-width:0}
-.card .price-col-header{font-size:.75em;color:#8a8070;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #1e2d4a;padding-bottom:2px;margin-bottom:2px;line-height:1.5;height:1.5em;overflow:hidden;text-align:center}
-.card .price-col-header.err{color:#c44d4d;text-transform:none}
-.card .grade-col{width:10px;flex-shrink:0;padding-right:4px}
+.card .price-cols{margin-top:2px}
+.card .price-header-row,.card .price-data-row{display:flex;gap:6px;align-items:center}
+.card .price-header-row{border-bottom:1px solid #2a3a5a;padding-bottom:2px;margin-bottom:2px}
+.card .price-data-row+.price-data-row{border-top:1px solid #2a3a5a}
+.card .grade-col{width:12px;flex-shrink:0}
 .card .grade-col .glabel{font-size:.75em;line-height:1.5}
-.card .grade-col .glabel.ga{color:#d4a94c}
-.card .grade-col .glabel.gb{color:#5b9bd5}
-.card .grade-col .glabel.gc{color:#a78bba}
-.card .price-row{font-size:.75em;line-height:1.5;color:#d4a94c;text-align:right;padding-right:4px}
+.card .glabel.ga{color:#d4a94c}
+.card .glabel.gb{color:#5b9bd5}
+.card .glabel.gc{color:#a78bba}
+.card .price-col-header{flex:1;font-size:.75em;color:#8a8070;text-transform:uppercase;letter-spacing:1px;text-align:center;line-height:1.5;overflow:hidden}
+.card .price-col-header.err{color:#c44d4d;text-transform:none}
+.card .price-row{flex:1;font-size:.75em;line-height:1.5;color:#d4a94c;text-align:right;padding-right:4px}
 .card .price-row.na{color:#4a4438;font-style:italic}
-.card .price-row+.price-row{border-top:1px solid #1e2d4a44}
 
 .footer{text-align:center;color:#8a8070;font-size:.85em;margin-top:32px}
 .footer a{color:#d4a94c}
@@ -330,22 +331,24 @@ async function init() {
         <div class="info">
           <div class="card-id">${c.id.toUpperCase()}</div>
           <div class="price-cols">
-            <div class="grade-col">
-              <div style="height:1.25em;overflow:hidden">&nbsp;</div>
-              <div class="glabel ga">A</div>
-              <div class="glabel gb">B</div>
-              <div class="glabel gc">C</div>
-            </div>
-            <div class="price-col">
+            <div class="price-header-row">
+              <div class="grade-col"></div>
               <div class="price-col-header">Reg.</div>
-              <div class="price-row${gp.std.A==null?' na':''}">${fmtGrade(gp.std.A)}</div>
-              <div class="price-row${gp.std.B==null?' na':''}">${fmtGrade(gp.std.B)}</div>
-              <div class="price-row${gp.std.C==null?' na':''}">${fmtGrade(gp.std.C)}</div>
-            </div>
-            <div class="price-col">
               <div class="price-col-header err">朗</div>
+            </div>
+            <div class="price-data-row">
+              <div class="grade-col"><span class="glabel ga">A</span></div>
+              <div class="price-row${gp.std.A==null?' na':''}">${fmtGrade(gp.std.A)}</div>
               <div class="price-row${gp.err.A==null?' na':''}">${fmtGrade(gp.err.A)}</div>
+            </div>
+            <div class="price-data-row">
+              <div class="grade-col"><span class="glabel gb">B</span></div>
+              <div class="price-row${gp.std.B==null?' na':''}">${fmtGrade(gp.std.B)}</div>
               <div class="price-row${gp.err.B==null?' na':''}">${fmtGrade(gp.err.B)}</div>
+            </div>
+            <div class="price-data-row">
+              <div class="grade-col"><span class="glabel gc">C</span></div>
+              <div class="price-row${gp.std.C==null?' na':''}">${fmtGrade(gp.std.C)}</div>
               <div class="price-row${gp.err.C==null?' na':''}">${fmtGrade(gp.err.C)}</div>
             </div>
           </div>
