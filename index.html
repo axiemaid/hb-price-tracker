@@ -22,7 +22,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 .set-filter label{display:flex;align-items:center;gap:4px;color:#8a8070;font-size:.85em;cursor:pointer}
 .set-filter input[type="checkbox"]{accent-color:#d4a94c;width:14px;height:14px;cursor:pointer}
 .set-filter input[type="checkbox"]:not(:checked){filter:brightness(0.5)saturate(0.5)}
-.grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(8,1fr);gap:12px}
 .table-view{max-width:1200px;margin:0 auto;display:none}
 .table-view table{width:100%;border-collapse:collapse;background:#131a2e;border-radius:10px;overflow:hidden;table-layout:fixed}
 .table-view th,.table-view td{padding:10px 12px;text-align:left;border-bottom:1px solid #1e2d4a}
@@ -73,8 +73,10 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 
 .footer{text-align:center;color:#8a8070;font-size:.85em;margin-top:32px}
 .footer a{color:#d4a94c}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(6,1fr)}}
+@media(max-width:800px){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:600px){
-  .grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+  .grid{grid-template-columns:repeat(3,1fr);gap:8px}
   .card .info{padding:5px 5px}
   h1{font-size:1.2em}
   .card img{border-radius:6px}
