@@ -312,7 +312,12 @@ async function init() {
     const grid = document.getElementById('grid');
     grid.innerHTML = sorted.map(c => {
       const gp = gradePriceMap[c.id] || { std: {}, err: {} };
-      const fmtGrade = v => v != null ? v.toLocaleString() : '—';
+      const fmtGrade = v => {
+        if (v == null) return '—';
+        if (v >= 1000000) return (v / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (v >= 10000) return (v / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+        return v.toLocaleString();
+      };
       
       return `<a href="card.html?id=${c.id}" class="card">
         <img src="images/thumbnails/${c.id}.webp" alt="${c.id}" loading="lazy" onerror="this.style.display='none'">
