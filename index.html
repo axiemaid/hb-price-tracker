@@ -222,17 +222,21 @@ async function init() {
     errPriceMap[c.id] = errStats.price;
     errChangeMap[c.id] = errStats.change;
     
-    // Compute per-grade prices for grid view (A, B, C only)
+    // Compute per-grade prices for grid view (A, B, C only) — last 10 sales average
     gradePriceMap[c.id] = { std: {}, err: {} };
     ['A', 'B', 'C'].forEach(g => {
       const stdG = allCardSales
         .filter(s => s.grade === g && !s.error_print)
-        .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
-      gradePriceMap[c.id].std[g] = computeStats(stdG).price;
+        .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date))
+        .slice(0, 10)
+        .map(s => s.price_jpy);
+      gradePriceMap[c.id].std[g] = stdG.length > 0 ? Math.round(mean(stdG)) : null;
       const errG = allCardSales
         .filter(s => s.grade === g && s.error_print)
-        .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
-      gradePriceMap[c.id].err[g] = computeStats(errG).price;
+        .sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date))
+        .slice(0, 10)
+        .map(s => s.price_jpy);
+      gradePriceMap[c.id].err[g] = errG.length > 0 ? Math.round(mean(errG)) : null;
     });
   });
 
