@@ -109,8 +109,8 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
       <option value="id">Card ID</option>
       <option value="price-asc">Price ↑</option>
       <option value="price-desc">Price ↓</option>
-      <option value="change-asc">30d Change ↑</option>
-      <option value="change-desc">30d Change ↓</option>
+      <option value="change-asc">Change ↑</option>
+      <option value="change-desc">Change ↓</option>
       <option value="sales-asc">Sold ↑</option>
       <option value="sales-desc">Sold ↓</option>
     </select>
@@ -147,7 +147,7 @@ h1{text-align:center;font-size:1.5em;color:#fff;margin-bottom:4px}
 <div class="grid" id="grid"></div>
 <div class="table-view" id="tableView">
   <table>
-    <thead><tr><th class="id" data-sort="id">ID</th><th class="img"></th><th class="name">Name</th><th class="price" data-sort="price">Price</th><th class="change" data-sort="change">30d Change</th><th class="sales" data-sort="sales">Sold</th></tr></thead>
+    <thead><tr><th class="id" data-sort="id">ID</th><th class="img"></th><th class="name">Name</th><th class="price" data-sort="price">Regular</th><th class="change" data-sort="change">Last 10</th><th class="sales" data-sort="sales">Sold</th></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
 </div>
@@ -172,9 +172,6 @@ async function init() {
   const gradePriceMap = {};
   
   // Use date strings (YYYY-MM-DD) for comparison to avoid time-of-day issues
-  const now = new Date();
-  const day30Str = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-  const day60Str = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   
   // Mean helper
   const mean = arr => arr.length === 0 ? null : arr.reduce((a, b) => a + b, 0) / arr.length;
@@ -182,24 +179,14 @@ async function init() {
   // Compute price + change for a set of grade A sales
   function computeStats(gradeASales) {
     if (gradeASales.length === 0) return { price: null, change: null };
-    const recent30 = gradeASales
-      .filter(s => s.sold_date >= day30Str)
-      .map(s => s.price_jpy);
-    const prev30 = gradeASales
-      .filter(s => s.sold_date >= day60Str && s.sold_date < day30Str)
-      .map(s => s.price_jpy);
+    const last10 = gradeASales.slice(0, 10).map(s => s.price_jpy);
+    const prev10 = gradeASales.slice(10, 20).map(s => s.price_jpy);
     
-    let price;
-    if (recent30.length >= 3) {
-      price = Math.round(mean(recent30));
-    } else {
-      const last10 = gradeASales.slice(0, 10).map(s => s.price_jpy);
-      price = last10.length > 0 ? Math.round(mean(last10)) : null;
-    }
+    let price = last10.length > 0 ? Math.round(mean(last10)) : null;
     
     let change = null;
-    if (recent30.length >= 3 && prev30.length >= 3) {
-      change = ((mean(recent30) - mean(prev30)) / mean(prev30)) * 100;
+    if (last10.length >= 3 && prev10.length >= 3) {
+      change = ((mean(last10) - mean(prev10)) / mean(prev10)) * 100;
     }
     return { price, change };
   }
@@ -268,9 +255,9 @@ async function init() {
 
     let sorted = [...filtered];
     if (sortBy === 'price-asc') {
-      sorted.sort((a, b) => (priceMap[a.id] ?? Infinity) - (priceMap[b.id] ?? Infinity));
+      sorted.sort((a, b) => (gradePriceMap[a.id]?.std?.A ?? Infinity) - (gradePriceMap[b.id]?.std?.A ?? Infinity));
     } else if (sortBy === 'price-desc') {
-      sorted.sort((a, b) => (priceMap[b.id] ?? -1) - (priceMap[a.id] ?? -1));
+      sorted.sort((a, b) => (gradePriceMap[b.id]?.std?.A ?? -1) - (gradePriceMap[a.id]?.std?.A ?? -1));
     } else if (sortBy === 'change-asc') {
       sorted.sort((a, b) => {
         const ca = changeMap[a.id] ?? -Infinity;
@@ -365,7 +352,7 @@ async function init() {
     // Render table view
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = sorted.map(c => {
-      const price = priceMap[c.id];
+      const price = gradePriceMap[c.id]?.std?.A ?? null;
       const change = changeMap[c.id];
       const salesCount = salesCountMap[c.id] || 0;
       const displayName = c.title?.en || c.name?.en || c.id.toUpperCase();
