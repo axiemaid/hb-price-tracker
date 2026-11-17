@@ -291,11 +291,9 @@ async function init() {
   const fullPointBorderColor = datasets.map(ds => ds.pointBorderColor);
   const fullPointBorderWidth = datasets.map(ds => ds.pointBorderWidth);
 
-  // Grade price rows - standard and error, 30d mean with fallback to last 10
+  // Grade price rows - standard and error, last 10 sales average
   const priceRowStd = document.getElementById('priceRowStd');
   const priceRowErr = document.getElementById('priceRowErr');
-  const now = new Date();
-  const day30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   const mean = arr => arr.length === 0 ? null : arr.reduce((a, b) => a + b, 0) / arr.length;
   
   function renderPriceSection(containerEl, salesSubset, label, labelClass, isError) {
@@ -314,16 +312,9 @@ async function init() {
     gradesPresent.forEach(g => {
       const pts = salesSubset.filter(s => s.grade === g).sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
       const cfg = GRADE_CONFIG[g];
-      const recent30 = pts.filter(s => new Date(s.sold_date) >= day30).map(s => s.price_jpy);
-      let priceMean, lbl;
-      if (recent30.length >= 3) {
-        priceMean = Math.round(mean(recent30));
-        lbl = '30d avg';
-      } else {
-        const last10 = pts.slice(0, 10).map(s => s.price_jpy);
-        priceMean = Math.round(mean(last10));
-        lbl = `Last ${last10.length} avg`;
-      }
+      const last10 = pts.slice(0, 10).map(s => s.price_jpy);
+      const priceMean = Math.round(mean(last10));
+      const lbl = `Last ${last10.length} avg`;
       const col = document.createElement('div');
       col.className = 'price-col';
       col.style.cursor = 'pointer';
