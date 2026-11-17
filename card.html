@@ -297,8 +297,8 @@ async function init() {
   const mean = arr => arr.length === 0 ? null : arr.reduce((a, b) => a + b, 0) / arr.length;
   
   function renderPriceSection(containerEl, salesSubset, label, labelClass, isError) {
-    const gradesPresent = ['A','B','C','D'].filter(g => salesSubset.some(s => s.grade === g));
-    if (gradesPresent.length === 0) return;
+    const hasAny = ['A','B','C','D'].some(g => salesSubset.some(s => s.grade === g));
+    if (!hasAny) return;
     
     containerEl.innerHTML = '';
     const labelEl = document.createElement('div');
@@ -309,26 +309,36 @@ async function init() {
     const row = document.createElement('div');
     row.className = 'price-row';
     
-    gradesPresent.forEach(g => {
+    ['A','B','C','D'].forEach(g => {
       const pts = salesSubset.filter(s => s.grade === g).sort((a, b) => new Date(b.sold_date) - new Date(a.sold_date));
       const cfg = GRADE_CONFIG[g];
       const last10 = pts.slice(0, 10).map(s => s.price_jpy);
-      const priceMean = Math.round(mean(last10));
-      const lbl = `Last ${last10.length} avg`;
       const col = document.createElement('div');
       col.className = 'price-col';
-      col.style.cursor = 'pointer';
-      col.innerHTML = `
-        <div class="grade-label" style="color:${cfg.color}">${cfg.label}</div>
-        <div class="price-big">¥${priceMean.toLocaleString()}</div>
-        <div class="detail">${lbl}</div>
-      `;
-      col.addEventListener('click', () => {
-        activeFilter = activeFilter === g ? 'All' : g;
-        renderTabs();
-        renderSales();
-        filterChart();
-      });
+      
+      if (last10.length === 0) {
+        col.style.cursor = 'default';
+        col.innerHTML = `
+          <div class="grade-label" style="color:${cfg.color};opacity:.4">${cfg.label}</div>
+          <div class="price-big" style="color:#4a4438">—</div>
+          <div class="detail">No sales</div>
+        `;
+      } else {
+        const priceMean = Math.round(mean(last10));
+        const lbl = `Last ${last10.length} avg`;
+        col.style.cursor = 'pointer';
+        col.innerHTML = `
+          <div class="grade-label" style="color:${cfg.color}">${cfg.label}</div>
+          <div class="price-big">¥${priceMean.toLocaleString()}</div>
+          <div class="detail">${lbl}</div>
+        `;
+        col.addEventListener('click', () => {
+          activeFilter = activeFilter === g ? 'All' : g;
+          renderTabs();
+          renderSales();
+          filterChart();
+        });
+      }
       row.appendChild(col);
     });
     containerEl.appendChild(row);
