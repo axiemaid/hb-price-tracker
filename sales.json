@@ -76266,18 +76266,6 @@
     "logged_at": "2026-11-15T18:12:02.822Z"
   },
   {
-    "item_id": "m66176426307",
-    "title": "ワンピース カードダス ハイパーバトル ゴムゴムの実 S03",
-    "price_jpy": 27000,
-    "price_display": "¥27,000",
-    "sold_date": "2026-11-15",
-    "card_id": "s03",
-    "grade": "B",
-    "notes": "",
-    "error_print": false,
-    "logged_at": "2026-11-15T18:13:05.257Z"
-  },
-  {
     "item_id": "m27090121323",
     "title": "ワンピース カードダス ゴムゴムの実 S03 1999年",
     "price_jpy": 26999,
@@ -81604,5 +81592,137 @@
     "notes": "",
     "error_print": true,
     "logged_at": "2026-11-23T16:49:30.532Z"
+  },
+  {
+    "item_id": "m86749798444",
+    "title": "旧裏ワンピースカードダス　ハイパーバトル　C20 シュシュ",
+    "price_jpy": 1000,
+    "price_display": "¥1,000",
+    "sold_date": "2026-11-23",
+    "card_id": "c20",
+    "grade": "C",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-23T17:09:50.349Z"
+  },
+  {
+    "item_id": "m38299727718",
+    "title": "1999年　カードダス　ワンピースハイパーバトル　シュシュ　忠犬　C20",
+    "price_jpy": 1111,
+    "price_display": "¥1,111",
+    "sold_date": "2026-11-23",
+    "card_id": "c20",
+    "grade": "C",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-23T17:10:12.450Z"
+  },
+  {
+    "item_id": "m50946824677",
+    "title": "ワンピース カードダス ハイパーバトル ゾロ 格の違い C06",
+    "price_jpy": 9999,
+    "price_display": "¥9,999",
+    "sold_date": "2026-11-23",
+    "card_id": "c06",
+    "grade": "A",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-23T20:01:54.640Z"
+  },
+  {
+    "item_id": "m14680838259",
+    "title": "ワンピース カードダス ゾロ 格の違い C06",
+    "price_jpy": 8000,
+    "price_display": "¥8,000",
+    "sold_date": "2026-11-23",
+    "card_id": "c06",
+    "grade": "B",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-23T20:02:15.258Z"
+  },
+  {
+    "item_id": "m71220427021",
+    "title": "ワンピース カードダス ハイパーバトル ナミ 危険察知 C10 エラー",
+    "price_jpy": 9999,
+    "price_display": "¥9,999",
+    "sold_date": "2026-11-23",
+    "card_id": "c10",
+    "grade": "C",
+    "notes": "",
+    "error_print": true,
+    "logged_at": "2026-11-23T20:08:07.386Z"
+  },
+  {
+    "item_id": "m41052218495",
+    "title": "ワンピース カードダス ハイパーバトル ナミ 危険察知 C10",
+    "price_jpy": 5555,
+    "price_display": "¥5,555",
+    "sold_date": "2026-11-23",
+    "card_id": "c10",
+    "grade": "A",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-23T20:08:37.787Z"
+  },
+  {
+    "item_id": "m95502236970",
+    "title": "(割引有)ワンピースカード　シュシュ　忠犬",
+    "price_jpy": 990,
+    "price_display": "¥990",
+    "sold_date": "2026-11-22",
+    "card_id": "c20",
+    "grade": "B",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-24T00:27:09.842Z"
+  },
+  {
+    "item_id": "m62917809267",
+    "title": "ワンピース カードダス シュシュ C20 ⭐︎朗エラー⭐︎",
+    "price_jpy": 4000,
+    "price_display": "¥4,000",
+    "sold_date": "2026-11-24",
+    "card_id": "c20",
+    "grade": "B",
+    "notes": "",
+    "error_print": true,
+    "logged_at": "2026-11-24T00:27:39.330Z"
+  },
+  {
+    "item_id": "m77413029633",
+    "title": "ワンピース カードダス シュシュ 忠犬 C20 BANDAI 1999",
+    "price_jpy": 2000,
+    "price_display": "¥2,000",
+    "sold_date": "2026-11-24",
+    "card_id": "c20",
+    "grade": "B",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-24T00:28:01.053Z"
+  },
+  {
+    "item_id": "m34311158497",
+    "title": "ワンピースカード ハイパーバトル ナミ 小悪魔 C09 カードダス",
+    "price_jpy": 2222,
+    "price_display": "¥2,222",
+    "sold_date": "2026-11-24",
+    "card_id": "c09",
+    "grade": "C",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-24T02:06:56.483Z"
+  },
+  {
+    "item_id": "m57349736013",
+    "title": "⭐︎朗エラー版⭐︎ワンピース カードダス ウソップ C13 1999年",
+    "price_jpy": 4950,
+    "price_display": "¥4,950",
+    "sold_date": "2026-11-24",
+    "card_id": "c13",
+    "grade": "B",
+    "notes": "",
+    "error_print": true,
+    "logged_at": "2026-11-24T02:07:30.961Z"
   }
 ]
