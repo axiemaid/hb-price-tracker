@@ -76368,7 +76368,7 @@
     "price_display": "¥5,000",
     "sold_date": "2026-11-15",
     "card_id": "s03",
-    "grade": "B",
+    "grade": "C",
     "notes": "",
     "error_print": false,
     "logged_at": "2026-11-15T18:19:10.552Z"
@@ -81816,7 +81816,7 @@
     "price_display": "¥9,999",
     "sold_date": "2026-11-25",
     "card_id": "s03",
-    "grade": "B",
+    "grade": "C",
     "notes": "",
     "error_print": false,
     "logged_at": "2026-11-25T01:54:57.241Z"
@@ -82432,5 +82432,65 @@
     "notes": "",
     "error_print": true,
     "logged_at": "2026-11-28T13:40:28.388Z"
+  },
+  {
+    "item_id": "m57558691963",
+    "title": "ワンピース カードダス ゾロ 鬼斬り C07",
+    "price_jpy": 18000,
+    "price_display": "¥18,000",
+    "sold_date": "2026-11-27",
+    "card_id": "c07",
+    "grade": "C",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-28T13:42:03.366Z"
+  },
+  {
+    "item_id": "m89189702290",
+    "title": "ワンピース カードダス ゾロ 鬼斬り C07",
+    "price_jpy": 22999,
+    "price_display": "¥22,999",
+    "sold_date": "2026-11-28",
+    "card_id": "c07",
+    "grade": "C",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-28T13:42:20.254Z"
+  },
+  {
+    "item_id": "m12446926497",
+    "title": "ワンピース カードダス ゾロ 鬼斬り C07",
+    "price_jpy": 34999,
+    "price_display": "¥34,999",
+    "sold_date": "2026-11-28",
+    "card_id": "c07",
+    "grade": "B",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-28T13:42:43.107Z"
+  },
+  {
+    "item_id": "m52027668757",
+    "title": "ワンピース　ハイパーバトル　c07 ゾロ　鬼斬り",
+    "price_jpy": 31000,
+    "price_display": "¥31,000",
+    "sold_date": "2026-11-27",
+    "card_id": "c07",
+    "grade": "C",
+    "notes": "",
+    "error_print": false,
+    "logged_at": "2026-11-28T13:43:01.427Z"
+  },
+  {
+    "item_id": "m98135993219",
+    "title": "ゆ*わ様 初期エラーカード ワンピース カードダス ゾロ 鬼斬り C07 エラー",
+    "price_jpy": 35100,
+    "price_display": "¥35,100",
+    "sold_date": "2026-11-27",
+    "card_id": "c07",
+    "grade": "C",
+    "notes": "",
+    "error_print": true,
+    "logged_at": "2026-11-28T13:43:26.976Z"
   }
 ]
